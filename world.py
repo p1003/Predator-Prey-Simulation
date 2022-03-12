@@ -16,6 +16,12 @@ class World:
         self.animals: list[Animal] = []
         self.init_animals()
 
+    def init(self, config: Config):
+        self.config = config
+        self.map = np.zeros((config.grid_xsize, config.grid_ysize), dtype=np.int8)
+        self.animal_ID = 0
+        self.animals: list[Animal] = []
+        self.init_animals()
     
     def init_animals(self):
         for i in range(self.config.n_predator):
