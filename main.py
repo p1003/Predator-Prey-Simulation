@@ -1,11 +1,14 @@
 from config import Config
-from gui.main_frame import MainFrame
+from gui.main_window import MainWindow
+from gui.utils import show_error
 from world import World
 
 if __name__ == '__main__':
-    config = Config()
+    try:
+        config = Config()
 
-    world = World(config)
+        world = World(config)
 
-    main_frame = MainFrame(world)
-    main_frame.start_loop()
+        main_frame = MainWindow(config, world)
+    except Exception as err:
+        show_error(f'Error. {err}')
