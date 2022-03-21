@@ -105,7 +105,7 @@ class SimulationFrame:
         self.world.next_turn()
 
         self.plot.clear()
-        self.plot.imshow(self.world.map, cmap=SimulationFrame.CMAP)
+        self.plot.imshow(self.world.get_map_for_render() , cmap=SimulationFrame.CMAP)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])

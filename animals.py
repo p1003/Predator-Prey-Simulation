@@ -1,4 +1,5 @@
 from enum import IntEnum
+from random import choice
 
 class Species(IntEnum):
     PREY = 1
@@ -16,13 +17,15 @@ class Animal:
     Tracks the animal's position, energy, species (rabbit/fox) and state (live/dead).
     """
 
-    def __init__(self, x0, y0, init_energy, species, id):
+    def __init__(self, x0: int, y0: int, init_energy: int, species: Species, id: int, world):
         self.x = x0
         self.y = y0
         self.energy = init_energy
         self.species = species
         self.id = id
         self.isDead = False
+        self.viewrange = 1
+        self.world = world
 
 
     def interact(self, other):
@@ -54,9 +57,9 @@ class Animal:
         self.energy -= 1
 
         if direction == Directions.LEFT:
-            self.x += 1 if self.x > 0 else -1   #"bounce back"
+            self.x -= 1 if self.x > 0 else -1   #"bounce back"
         if direction == Directions.RIGHT:
-            self.x -= 1 if self.x < gridxsize-1 else -1
+            self.x += 1 if self.x < gridxsize-1 else -1
         if direction == Directions.UP:
             self.y += 1 if self.y < gridysize-1 else -1
         if direction == Directions.DOWN:
@@ -66,6 +69,12 @@ class Animal:
 
         if self.energy <= 0:
             self.die()          #R.I.P.
+
+    def choose_direction(self):
+        x, y = self.get_position()
+        neighbourhood = self.world.get_submap(x=x, y=y, range=self.viewrange)
+        # TODO: detection of other animals and food
+        return choice(list(Directions))
 
     def get_position(self):
         return self.x, self.y

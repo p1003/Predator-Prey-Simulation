@@ -1,7 +1,8 @@
+from pydoc import visiblename
 from random import randrange
 import numpy as np
 from config import Config
-from animals import Animal, Directions, Species
+from animals import Animal, Species
 
 
 class World:
@@ -42,18 +43,26 @@ class World:
 
     def add_animal(self, x0: int, y0: int, species: int):
         self.animal_ID = self.animal_ID + 1
-        a = Animal(x0=x0, y0=y0, init_energy=self.config.base_animal_energy, species=species, id=self.animal_ID)
+        a = Animal(x0=x0, y0=y0, init_energy=self.config.base_animal_energy, species=species, id=self.animal_ID, world=self)
         self.map[x0][y0] = species
         self.animals.append(a)
 
     def next_turn(self):
         for a in self.animals:
-            direction = Directions.DOWN
             old_x, old_y = a.get_position()
+            direction = a.choose_direction()
             a.move(direction=direction, gridxsize=self.config.grid_xsize, gridysize=self.config.grid_ysize)
             new_x, new_y = a.get_position()
             self.map[old_x][old_y] = 0
-            self.map[new_x][new_y] = a.species
+            self.map[new_x][new_y] = a.id
+    
+    def get_map_for_render(self):
+        render_map = self.map
+        for a in self.animals:
+            x, y = a.get_position()
+            render_map[x][y] = a.species
+        return render_map
 
-
-print(World(Config()).map)
+    def get_submap(self, x: int, y: int, range: int):
+        result = self.map[x-range-1:x+range, y-range-1:y+range]
+        return result
