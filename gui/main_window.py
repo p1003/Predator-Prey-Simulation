@@ -1,9 +1,12 @@
 import tkinter as tk
 
+import matplotlib
+
 from config import Config
 from gui.config_menu_window import ConfigMenuWindow
 from gui.simulation_frame import SimulationFrame
-from gui.utils import center_window
+from gui.statistics_frame import StatisticsFrame
+from gui.utils import center_window, SimulationTimer
 from world import World
 
 
@@ -11,7 +14,16 @@ class MainWindow:
     def __init__(self, config: Config, world: World):
         self.config = config
         self.world = world
+
         self.root = None
+
+        self.simulation_timer = None
+
+        self.simulation_frame = None
+        self.statistics_frame = None
+
+        matplotlib.rcParams.update({'font.size': 8})
+
         self.init()
 
     def init(self):
@@ -24,7 +36,11 @@ class MainWindow:
         self.root.title('Simulation')
         self.root.protocol("WM_DELETE_WINDOW", exit)
 
-        SimulationFrame(self)
+        self.simulation_timer = SimulationTimer(self._next_turn_update)
+        self.simulation_timer.start()
+
+        self.simulation_frame = SimulationFrame(self)
+        self.statistics_frame = StatisticsFrame(self)
 
         self.root.update()
         self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
@@ -39,3 +55,9 @@ class MainWindow:
 
     def start_loop(self):
         self.root.mainloop()
+
+    def _next_turn_update(self):
+        self.world.next_turn()
+
+        self.simulation_frame.next_turn_update()
+        self.statistics_frame.next_turn_update()

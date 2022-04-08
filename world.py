@@ -66,3 +66,15 @@ class World:
     def get_submap(self, x: int, y: int, range: int):
         result = self.map[x-range-1:x+range, y-range-1:y+range]
         return result
+
+    def get_n_prey(self):
+        # TODO
+        return 20
+
+    def get_n_predators(self):
+        # TODO
+        return 30
+
+    def get_n_grass(self):
+        # TODO
+        return 10

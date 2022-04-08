@@ -1,5 +1,4 @@
 import tkinter as tk
-from threading import Thread, Event
 from tkinter import ttk
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -14,11 +13,29 @@ class SimulationFrame:
 
     def __init__(self, main_window):
         self.main_window = main_window
-        self.world = self.main_window.world
-        self.root = self.main_window.root
+        root = main_window.root
+        self.world = main_window.world
+        self.simulation_timer = main_window.simulation_timer
+
+        frame = ttk.Frame(root, relief='groove', borderwidth=3)
+
+        # map
+        self.fig = Figure(figsize=(5, 5))
+
+        self.plot = self.fig.add_subplot(111)
+        self.plot.imshow(self.world.get_map_for_render(), cmap=SimulationFrame.CMAP)
+
+        self.fig.gca().set_xticks([])
+        self.fig.gca().set_yticks([])
+        self.fig.tight_layout()
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
+        self.canvas.draw()
+
+        self.canvas.get_tk_widget().pack(expand=True, fill='both')
 
         # options frame
-        options_frame = ttk.Frame(self.root, relief='ridge', borderwidth=2)
+        options_frame = ttk.Frame(frame, relief='ridge', borderwidth=2)
 
         button_start = ttk.Button(options_frame, text='Start', command=self._button_start_command)
         button_start.pack(side='left')
@@ -31,86 +48,27 @@ class SimulationFrame:
                                            variable=self.var_simulation_speed, command=self._update_simulation_speed)
         scale_simulation_speed.pack(side='left')
 
-        button_next_turn = ttk.Button(options_frame, text='Next turn', command=self._next_turn_update)
+        button_next_turn = ttk.Button(options_frame, text='Next turn', command=self._button_next_turn_command)
         button_next_turn.pack(side='left')
 
         button_reset = ttk.Button(options_frame, text='Reset', command=self._button_reset_command)
         button_reset.pack(side='left')
 
-        options_frame.pack(side='bottom', padx=2, pady=2)
+        options_frame.pack(padx=2, pady=2)
 
-        # simulation frame
-        simulation_frame = ttk.Frame(self.root)
+        frame.pack(side='right', expand=True, fill='both')
 
-        self.fig = Figure(figsize=(4, 4))
-
-        self.plot = self.fig.add_subplot(111)
-        self.plot.imshow(self.world.map, cmap=SimulationFrame.CMAP)
-
-        self.fig.gca().set_xticks([])
-        self.fig.gca().set_yticks([])
-        self.fig.tight_layout()
-
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.canvas.draw()
-
-        self.canvas.get_tk_widget().pack(expand=True, fill='both')
-
-        simulation_frame.pack(side='top', fill='both')
-
-        # simulation timer
-        class SimulationTimer(Thread):
-            def __init__(self, action, timeout=1):
-                Thread.__init__(self, daemon=True)
-                self.action = action
-                self.timeout = timeout
-
-                self.can_run = Event()
-                self.stopped = Event()
-
-                self.killed = False
-
-            def run(self):
-                while True:
-                    self.can_run.wait()
-                    if self.killed:
-                        break
-                    while not self.stopped.wait(self.timeout):
-                        self.action()
-
-            def start_timer(self):
-                self.stopped.clear()
-                self.can_run.set()
-
-            def stop_timer(self):
-                self.can_run.clear()
-                self.stopped.set()
-
-            def is_running(self):
-                return self.can_run.is_set()
-
-            def kill(self):
-                self.killed = True
-                self.can_run.set()
-                self.stopped.set()
-
-            def update_timeout(self, timeout):
-                self.timeout = timeout
-
-        self.simulation_timer = SimulationTimer(self._next_turn_update)
-        self.simulation_timer.stop_timer()
-        self.simulation_timer.start()
-
-    def _next_turn_update(self):
-        self.world.next_turn()
-
+    def next_turn_update(self):
         self.plot.clear()
-        self.plot.imshow(self.world.get_map_for_render() , cmap=SimulationFrame.CMAP)
+        self.plot.imshow(self.world.get_map_for_render(), cmap=SimulationFrame.CMAP)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])
 
         self.canvas.draw()
+
+    def _button_next_turn_command(self):
+        self.simulation_timer.trigger_action()
 
     def _button_start_command(self):
         self.simulation_timer.start_timer()
