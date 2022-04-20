@@ -14,7 +14,7 @@ class SimulationFrame:
     def __init__(self, main_window):
         self.main_window = main_window
         root = main_window.root
-        self.world = main_window.world
+        self.map = main_window.map
         self.simulation_timer = main_window.simulation_timer
 
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
@@ -23,7 +23,7 @@ class SimulationFrame:
         self.fig = Figure(figsize=(5, 5))
 
         self.plot = self.fig.add_subplot(111)
-        self.plot.imshow(self.world.get_map_for_render(), cmap=SimulationFrame.CMAP)
+        self.plot.imshow(self.map.get_map_for_render(), cmap=SimulationFrame.CMAP)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])
@@ -60,7 +60,7 @@ class SimulationFrame:
 
     def next_turn_update(self):
         self.plot.clear()
-        self.plot.imshow(self.world.get_map_for_render(), cmap=SimulationFrame.CMAP)
+        self.plot.imshow(self.map.get_map_for_render(), cmap=SimulationFrame.CMAP)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])

@@ -7,13 +7,13 @@ from gui.config_menu_window import ConfigMenuWindow
 from gui.simulation_frame import SimulationFrame
 from gui.statistics_frame import StatisticsFrame
 from gui.utils import center_window, SimulationTimer
-from world import World
+from world.map import Map
 
 
 class MainWindow:
-    def __init__(self, config: Config, world: World):
+    def __init__(self, config: Config, map: Map):
         self.config = config
-        self.world = world
+        self.map = map
 
         self.root = None
 
@@ -27,10 +27,10 @@ class MainWindow:
         self.init()
 
     def init(self):
-        config_menu_window = ConfigMenuWindow(self.config, self.world)
+        config_menu_window = ConfigMenuWindow(self.config, self.map)
         config_menu_window.start_loop()
 
-        self.world.init(self.config)
+        self.map.init(self.config)
 
         self.root = tk.Tk()
         self.root.title('Simulation')
@@ -57,7 +57,7 @@ class MainWindow:
         self.root.mainloop()
 
     def _next_turn_update(self):
-        self.world.next_turn()
+        self.map.next_turn()
 
         self.simulation_frame.next_turn_update()
         self.statistics_frame.next_turn_update()

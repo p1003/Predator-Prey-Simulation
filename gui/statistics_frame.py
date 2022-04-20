@@ -5,12 +5,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
 
-from world import World
+from world.map import Map
 
 
 class PopulationGraphFrame:
-    def __init__(self, root, world: World):
-        self.world = world
+    def __init__(self, root, map: Map):
+        self.map = map
 
         frame = ttk.Frame(root, relief='ridge', borderwidth=2)
 
@@ -62,9 +62,9 @@ class PopulationGraphFrame:
     def _update_next_turn(self):
         self.x.append(self.n_turns)
         self.n_turns += 1
-        self.n_prey.append(self.world.get_n_prey())
-        self.n_predators.append(self.world.get_n_predators())
-        self.n_grass.append(self.world.get_n_grass())
+        self.n_prey.append(self.map.get_n_prey())
+        self.n_predators.append(self.map.get_n_predators())
+        self.n_grass.append(self.map.get_n_grass())
 
     def _redraw(self):
         self.plot.clear()
@@ -98,11 +98,11 @@ class PopulationGraphFrame:
 class StatisticsFrame:
     def __init__(self, main_window):
         root = main_window.root
-        world = main_window.world
+        map = main_window.map
 
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
-        self.population_graph = PopulationGraphFrame(frame, world)
+        self.population_graph = PopulationGraphFrame(frame, map)
 
         frame.pack(side='left', expand=True, fill='both')
 

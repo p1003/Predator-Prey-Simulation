@@ -1,54 +1,46 @@
-from enum import IntEnum
 from random import choice
 
-class Species(IntEnum):
-    PREY = 1
-    PREDATOR = 2
+from world.abstracts import AbstractMap, AbstractMapTile, AbstractAnimal
+from world.enumerators import Species, Directions
 
-class Directions(IntEnum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
-    STAY = 4
 
-class Animal:
+class Animal(AbstractAnimal):
     """
     Tracks the animal's position, energy, species (rabbit/fox) and state (live/dead).
     """
 
-    def __init__(self, x0: int, y0: int, init_energy: int, species: Species, id: int, world):
-        self.x = x0
-        self.y = y0
+    def __init__(self, x: int, y: int, init_energy: float, species: Species, id: int, map: AbstractMap):
+        self.x = x
+        self.y = y
         self.energy = init_energy
         self.species = species
         self.id = id
         self.isDead = False
         self.viewrange = 1
-        self.world = world
+        self.map = map
+        #TODO: self.genome = ...
 
 
-    def interact(self, other):
+    def interact(self, other: AbstractAnimal):
         """
-        Interact with another animal:
-            - If they're from the same species, ignore each other.
-            - Fox eats rabbit.
         """
         if self.species == Species.PREY and other.species == Species.PREDATOR:
             self.die()
+            other.energy += self.energy//2
 
         elif self.species == Species.PREDATOR and other.species == Species.PREY:
             other.die()
+            self.energy += other.energy//2
 
 
 
     def die(self):
-        "R.I.P"
         self.isDead = True
 
 
     def move(self, direction, gridxsize, gridysize):
-        """Move a step on the grid. Each step consumes 1 energy; if no energy left, die.
+        """
+        Move a step on the grid. Each step consumes 1 energy; if no energy left, die.
         If hitting the bounds of the grid, "bounde back", step to the opposite direction insetad.
 
         Arguments:
@@ -57,7 +49,7 @@ class Animal:
         self.energy -= 1
 
         if direction == Directions.LEFT:
-            self.x -= 1 if self.x > 0 else -1   #"bounce back"
+            self.x -= 1 if self.x > 0 else -1
         if direction == Directions.RIGHT:
             self.x += 1 if self.x < gridxsize-1 else -1
         if direction == Directions.UP:
@@ -72,9 +64,12 @@ class Animal:
 
     def choose_direction(self):
         x, y = self.get_position()
-        neighbourhood = self.world.get_submap(x=x, y=y, range=self.viewrange)
+        neighbourhood: list[list[AbstractMapTile]] = self.map.get_submap(x=x, y=y, radius=self.viewrange)
         # TODO: detection of other animals and food
         return choice(list(Directions))
 
     def get_position(self):
         return self.x, self.y
+
+class Genome:
+    """"""
