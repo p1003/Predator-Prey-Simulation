@@ -9,4 +9,5 @@ class Config:
         self.grid_xsize = 30
         self.grid_ysize = 30
         self.base_animal_energy = 100
+        self.plant_regeneration_ratio = 0.2
         

@@ -38,6 +38,7 @@ class AbstractAnimal(ABC):
 
 class AbstractMapTile(ABC):
     animals: list[AbstractAnimal]
+    plant_supply: float
 
     @abstractmethod
     def put_animal(self, a: AbstractAnimal):
@@ -54,10 +55,11 @@ class AbstractMapTile(ABC):
 class AbstractMap(ABC):
     tiles: list[list[AbstractMapTile]]
     animals: list[AbstractAnimal]
+    new_animals: list[AbstractAnimal]
     animal_ID: int
     x_size: int
     y_size: int
-    base_animal_energy: int
+    plant_regeneration_ratio: float
 
     @abstractmethod
     def init(self, config: Config):
@@ -68,7 +70,11 @@ class AbstractMap(ABC):
         pass
 
     @abstractmethod
-    def add_animal(self, x: int, y: int, species: int):
+    def add_animal(self, x: int, y: int, init_energy: int, species: int):
+        pass
+
+    @abstractmethod
+    def add_child(self, x: int, y: int, init_energy: int, species: int):
         pass
 
     @abstractmethod
@@ -77,14 +83,6 @@ class AbstractMap(ABC):
 
     @abstractmethod
     def next_turn(self):
-        pass
-
-    @abstractmethod
-    def _clean_dead_animals(self):
-        pass
-
-    @abstractmethod
-    def _process_interactions(self):
         pass
 
     @abstractmethod
