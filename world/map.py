@@ -16,7 +16,7 @@ class MapTile(AbstractMapTile):
 
     def __init__(self):
         self.animals = []
-        self.plant_supply = 0.0
+        self.plant_supply = 1.0
     
     def put_animal(self, a: Animal):
         self.animals.append(a)
@@ -47,6 +47,8 @@ class Map(AbstractMap):
         self.x_size = config.grid_xsize
         self.y_size = config.grid_ysize
         self.plant_regeneration_ratio = config.plant_regeneration_ratio
+        self.max_plant_supply = config.max_plant_supply
+        self.minimal_reproduction_energy = config.minimal_reproduction_energy
 
         for x in range(self.x_size):
             self.tiles.append([])
@@ -154,19 +156,32 @@ class Map(AbstractMap):
                     interacted[a.id] = True
                     if a.species == Species.PREY:
                         prey_on_tile_count += 1
-                if self.tiles[x][y].plant_supply > 1 and prey_on_tile_count > 0:
-                    general_supply = self.tiles[x][y].plant_supply//prey_on_tile_count
-                    supply = general_supply + (self.tiles[x][y].plant_supply//1)%prey_on_tile_count
+                current_plant_supply = self.tiles[x][y].plant_supply // 1
+                if current_plant_supply > 1 and prey_on_tile_count > 0:
 
-                    for a in self.tiles[x][y].animals:
-                        if a.species == Species.PREY:
-                            a.energy += supply
-                            supply = general_supply
+                    if current_plant_supply <= prey_on_tile_count:
+                        supply = 1
+                        i = 0
+                        for a in self.tiles[x][y].animals:
+                            if a.species == Species.PREY:
+                                a.energy += supply
+                                i += 1
+                            if i >= current_plant_supply:
+                                break
+
+                    else:
+                        general_supply = current_plant_supply / prey_on_tile_count
+                        supply = general_supply + current_plant_supply % prey_on_tile_count
+                        for a in self.tiles[x][y].animals:
+                            if a.species == Species.PREY:
+                                a.energy += supply
+                                supply = general_supply
+
                 self.tiles[x][y].plant_supply = 0.0
 
         for tiles_row in self.tiles:
             for tile in tiles_row:
-                tile.plant_supply += self.plant_regeneration_ratio
+                tile.plant_supply = min(tile.plant_supply + self.plant_regeneration_ratio, self.max_plant_supply)
     
     def get_submap(self, x: int, y: int, radius: int) -> list[list[MapTile]]:
         result_tiles: list[list[MapTile]] = []

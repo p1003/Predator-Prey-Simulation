@@ -25,7 +25,7 @@ class Animal(AbstractAnimal):
         """
         """
         if self.species == other.species:
-            if self.energy > 30 and other.energy > 30:
+            if self.energy > self.map.minimal_reproduction_energy and other.energy > self.map.minimal_reproduction_energy:
                 new_self_energy = self.energy//3 * 2
                 new_other_energy = other.energy//3 * 2
                 child_energy = (self.energy - new_self_energy) + (other.energy - new_other_energy)

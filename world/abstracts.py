@@ -60,6 +60,8 @@ class AbstractMap(ABC):
     x_size: int
     y_size: int
     plant_regeneration_ratio: float
+    max_plant_supply: float
+    minimal_reproduction_energy: int
 
     @abstractmethod
     def init(self, config: Config):
