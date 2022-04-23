@@ -52,6 +52,11 @@ class AbstractMapTile(ABC):
     def get_render_value(self):
         pass
 
+    @abstractmethod
+    def get_n_plants(self):
+        pass
+
+
 class AbstractMap(ABC):
     tiles: list[list[AbstractMapTile]]
     animals: list[AbstractAnimal]
@@ -89,4 +94,18 @@ class AbstractMap(ABC):
 
     @abstractmethod
     def get_submap(self, x: int, y: int, radius: int) -> list[list[AbstractMapTile]]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def get_n_prey():
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def get_n_predators():
+        pass
+
+    @abstractmethod
+    def get_n_grass(self):
         pass

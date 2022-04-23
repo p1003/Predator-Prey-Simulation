@@ -8,6 +8,8 @@ class Animal(AbstractAnimal):
     """
     Tracks the animal's position, energy, species (rabbit/fox) and state (live/dead).
     """
+    n_prey = 0
+    n_predator = 0
 
     def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: AbstractMap):
         self.x = x
@@ -20,6 +22,12 @@ class Animal(AbstractAnimal):
         self.map = map
         #TODO: self.genome = ...
 
+        if self.species == Species.PREY:
+            Animal.n_prey += 1
+        elif self.species == Species.PREDATOR:
+            Animal.n_predator += 1
+        else:
+            raise ValueError(f'{self.species} is a wrong species')
 
     def interact(self, other: AbstractAnimal):
         """
@@ -42,10 +50,12 @@ class Animal(AbstractAnimal):
             other.die()
             self.energy += other.energy
 
-
-
     def die(self):
         self.isDead = True
+        if self.species == Species.PREY:
+            Animal.n_prey -= 1
+        else:
+            Animal.n_predator -= 1
 
 
     def move(self, direction, gridxsize, gridysize):

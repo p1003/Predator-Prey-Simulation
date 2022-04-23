@@ -1,12 +1,11 @@
 from random import randrange
+
 import numpy as np
 
 from config import Config
-
-from world.enumerators import Species
-from world.animals import Animal
-
 from world.abstracts import AbstractAnimal, AbstractMap, AbstractMapTile
+from world.animals import Animal
+from world.enumerators import Species
 
 
 class MapTile(AbstractMapTile):
@@ -29,6 +28,9 @@ class MapTile(AbstractMapTile):
         if len(self.animals) > 0:
             return self.animals[0].species
         return 0
+
+    def get_n_plants(self):
+        return int(self.plant_supply)
 
 
 class Map(AbstractMap):
@@ -191,16 +193,14 @@ class Map(AbstractMap):
                 row.append(self.tiles[i][j])
             result_tiles.append(row)
         return result_tiles
-                
 
-    def get_n_prey(self):
-        # TODO: move to Statistics class
-        return 20
+    @staticmethod
+    def get_n_prey():
+        return Animal.n_prey
 
-    def get_n_predators(self):
-        # TODO move to Statistics class
-        return 30
+    @staticmethod
+    def get_n_predators():
+        return Animal.n_predator
 
     def get_n_grass(self):
-        # TODO move to Statistics class
-        return 10
+        return sum(tile.get_n_plants() for row in self.tiles for tile in row)
