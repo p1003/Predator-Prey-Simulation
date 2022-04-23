@@ -59,6 +59,8 @@ class Map(AbstractMap):
         self.init_animals(config.n_predator, config.n_prey, config.base_animal_energy)
     
     def init_animals(self, n_predator, n_prey, base_animal_energy):
+        Animal.reset_counts()
+
         for _ in range(n_predator):
             while True:
                 x = randrange(0,self.x_size)

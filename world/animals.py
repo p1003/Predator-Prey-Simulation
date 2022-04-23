@@ -91,5 +91,10 @@ class Animal(AbstractAnimal):
     def get_position(self):
         return self.x, self.y
 
+    @classmethod
+    def reset_counts(cls):
+        cls.n_prey = 0
+        cls.n_predator = 0
+
 class Genome:
     """"""
