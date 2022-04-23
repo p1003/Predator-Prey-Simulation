@@ -39,9 +39,9 @@ class Animal(object):
     Tracks the animal's position, energy, species (rabbit/fox) and state (live/dead).
     """
 
-    def __init__(self, x0, y0, init_energy, species):
-        self.x = x0
-        self.y = y0
+    def __init__(self, x, y, init_energy, species):
+        self.x = x
+        self.y = y
         self.energy = init_energy
         self.species = species
         self.isDead = False
@@ -105,9 +105,9 @@ rabbitcoords = randcoords[:nrabbits]
 foxcoords = randcoords[nrabbits:(nrabbits + nfoxes)]
 
 for (x, y) in rabbitcoords:
-    animals.append(Animal(x0=x, y0=y, init_energy=rabben, species=PREY))
+    animals.append(Animal(x=x, y=y, init_energy=rabben, species=PREY))
 for (x, y) in foxcoords:
-    animals.append(Animal(x0=x, y0=y, init_energy=foxen, species=PREDATOR))
+    animals.append(Animal(x=x, y=y, init_energy=foxen, species=PREDATOR))
 
 
 t_rabcoordsx = []   # track the coordinates of the animals in each step in these arrays
@@ -131,13 +131,13 @@ for i in range(steps):
     rabbit_is_born_here = np.random.rand(len(coords)) <= rabbit_newborn_chance
     newrabbits = coords[rabbit_is_born_here]
     for (x, y) in newrabbits:
-        animals.append(Animal(x0=x, y0=y, init_energy=rabben, species=PREY))
+        animals.append(Animal(x=x, y=y, init_energy=rabben, species=PREY))
 
     #...  and foxes
     fox_is_born_here = np.random.rand(len(coords)) <= fox_newborn_chance
     newfoxes = coords[fox_is_born_here]
     for (x, y) in newfoxes:
-        animals.append(Animal(x0=x, y0=y, init_energy=foxen, species=PREDATOR))
+        animals.append(Animal(x=x, y=y, init_energy=foxen, species=PREDATOR))
 
     # interact if two animals are at the same coordinates
     for j, animal1 in enumerate(animals):

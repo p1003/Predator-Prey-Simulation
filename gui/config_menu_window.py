@@ -3,12 +3,12 @@ from tkinter import ttk
 
 from config import Config
 from gui.utils import center_window
-from world import World
+from world.map import Map
 
 
 class ConfigMenuWindow:
-    def __init__(self, config: Config, world: World):
-        self.world = world
+    def __init__(self, config: Config, map: Map):
+        self.map = map
         self.config = config
 
         self.root = tk.Tk()
