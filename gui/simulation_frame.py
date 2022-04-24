@@ -34,7 +34,7 @@ class SimulationFrame:
         self.fig = Figure(figsize=(5, 5))
 
         self.plot = self.fig.add_subplot(111)
-        self.plot.imshow(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
+        self.plot.pcolor(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
                          vmax=2 + self.config.max_plant_supply)
 
         self.fig.gca().set_xticks([])
@@ -72,7 +72,7 @@ class SimulationFrame:
 
     def next_turn_update(self):
         self.plot.clear()
-        self.plot.imshow(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
+        self.plot.pcolor(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
                          vmax=2 + self.config.max_plant_supply)
 
         self.fig.gca().set_xticks([])
