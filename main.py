@@ -1,7 +1,7 @@
 from config import Config
 from gui.main_window import MainWindow
 from gui.utils import show_error
-from world.map import Map
+from world import Map
 
 if __name__ == '__main__':
     try:

@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
 
-from world.map import Map
+from world import Map
 
 
 class PopulationGraphFrame:

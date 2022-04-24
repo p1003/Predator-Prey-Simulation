@@ -3,13 +3,12 @@ from random import randrange
 import numpy as np
 
 from config import Config
-from world.abstracts import AbstractAnimal, AbstractMap, AbstractMapTile
 from world.animals import Animal
 from world.enumerators import Species
 from world.statistics import Statistics
 
 
-class MapTile(AbstractMapTile):
+class MapTile:
     """
     Class representing one tile of the map
     """
@@ -34,7 +33,7 @@ class MapTile(AbstractMapTile):
         return int(self.plant_supply)
 
 
-class Map(AbstractMap):
+class Map:
     """
     Class holding all entities on it
     """
@@ -108,8 +107,8 @@ class Map(AbstractMap):
         self._process_plants_eating_and_growing()
     
     def _clean_dead_animals(self):
-        alive: list[AbstractAnimal] =[]
-        dead: list[AbstractAnimal] = []
+        alive: list[Animal] =[]
+        dead: list[Animal] = []
         for animal in self.animals:
             dead.append(animal) if animal.isDead else alive.append(animal)
         

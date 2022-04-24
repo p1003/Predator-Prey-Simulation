@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from config import Config
 from gui.utils import center_window
-from world.map import Map
+from world import Map
 
 
 class ConfigMenuWindow:
