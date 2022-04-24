@@ -58,11 +58,12 @@ class Animal:
             self.energy += other.energy
 
     def die(self):
-        self.isDead = True
-        if self.species == Species.PREY:
-            Animal.n_prey -= 1
-        else:
-            Animal.n_predator -= 1
+        if not self.isDead:
+            self.isDead = True
+            if self.species == Species.PREY:
+                Animal.n_prey -= 1
+            else:
+                Animal.n_predator -= 1
 
 
     def move(self, direction, gridxsize, gridysize):
