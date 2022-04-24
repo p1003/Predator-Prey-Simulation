@@ -6,6 +6,7 @@ from config import Config
 from world.abstracts import AbstractAnimal, AbstractMap, AbstractMapTile
 from world.animals import Animal
 from world.enumerators import Species
+from world.statistics import Statistics
 
 
 class MapTile(AbstractMapTile):
@@ -40,6 +41,7 @@ class Map(AbstractMap):
 
     def __init__(self, config: Config):
         self.init(config=config)
+        self.statistics = Statistics(self)
 
     def init(self, config: Config):
         self.tiles = []
@@ -195,14 +197,3 @@ class Map(AbstractMap):
                 row.append(self.tiles[i][j])
             result_tiles.append(row)
         return result_tiles
-
-    @staticmethod
-    def get_n_prey():
-        return Animal.n_prey
-
-    @staticmethod
-    def get_n_predators():
-        return Animal.n_predator
-
-    def get_n_grass(self):
-        return sum(tile.get_n_plants() for row in self.tiles for tile in row)

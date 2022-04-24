@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-import numpy as np
-from config import Config
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
+from config import Config
 from world.enumerators import Species
+
+if TYPE_CHECKING:
+    from world.statistics import Statistics
 
 class AbstractAnimal(ABC):
     x: int
@@ -67,6 +70,7 @@ class AbstractMap(ABC):
     plant_regeneration_ratio: float
     max_plant_supply: float
     minimal_reproduction_energy: int
+    statistics: Statistics
 
     @abstractmethod
     def init(self, config: Config):
@@ -94,18 +98,4 @@ class AbstractMap(ABC):
 
     @abstractmethod
     def get_submap(self, x: int, y: int, radius: int) -> list[list[AbstractMapTile]]:
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def get_n_prey():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def get_n_predators():
-        pass
-
-    @abstractmethod
-    def get_n_grass(self):
         pass

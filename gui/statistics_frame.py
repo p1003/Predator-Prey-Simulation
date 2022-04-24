@@ -9,8 +9,8 @@ from world.map import Map
 
 
 class PopulationGraphFrame:
-    def __init__(self, root, map: Map):
-        self.map = map
+    def __init__(self, root, world_map: Map):
+        self.statistics = world_map.statistics
 
         frame = ttk.Frame(root, relief='ridge', borderwidth=2)
 
@@ -62,9 +62,9 @@ class PopulationGraphFrame:
     def _update_next_turn(self):
         self.x.append(self.n_turns)
         self.n_turns += 1
-        self.n_prey.append(self.map.get_n_prey())
-        self.n_predators.append(self.map.get_n_predators())
-        self.n_grass.append(self.map.get_n_grass())
+        self.n_prey.append(self.statistics.get_n_prey())
+        self.n_predators.append(self.statistics.get_n_predators())
+        self.n_grass.append(self.statistics.get_n_grass())
 
     def _redraw(self):
         self.plot.clear()
