@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.colors import ListedColormap
 from matplotlib.figure import Figure
@@ -11,13 +13,19 @@ from gui.utils import show_askyesno
 # TODO: fix painting prey as predators when there are not prey
 # TODO: fix legend for no plots
 class SimulationFrame:
-    CMAP = ListedColormap(['limegreen', 'yellow', 'red'])
+    GRASS_CMAP = 'YlGn'
+    GRASS_CMAP_START = 0.2
+    PREY_COLOR = 'royalblue'
+    PREDATOR_COLOR = 'red'
 
     def __init__(self, main_window):
         self.main_window = main_window
         root = main_window.root
+        self.config = main_window.config
         self.map = main_window.map
         self.simulation_timer = main_window.simulation_timer
+
+        self.cmap = self._init_cmap()
 
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
@@ -25,7 +33,8 @@ class SimulationFrame:
         self.fig = Figure(figsize=(5, 5))
 
         self.plot = self.fig.add_subplot(111)
-        self.plot.imshow(self.map.get_map_for_render(), cmap=SimulationFrame.CMAP)
+        self.plot.imshow(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
+                         vmax=2 + self.config.max_plant_supply + 1)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])
@@ -62,12 +71,20 @@ class SimulationFrame:
 
     def next_turn_update(self):
         self.plot.clear()
-        self.plot.imshow(self.map.get_map_for_render(), cmap=SimulationFrame.CMAP)
+        self.plot.imshow(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
+                         vmax=2 + self.config.max_plant_supply + 1)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])
 
         self.canvas.draw()
+
+    def _init_cmap(self):
+        grass_cmap = plt.get_cmap(SimulationFrame.GRASS_CMAP)
+        inc = (1.0 - SimulationFrame.GRASS_CMAP_START) / (self.config.max_plant_supply + 1)
+        grass_cmap_list = [grass_cmap(x) for x in np.arange(SimulationFrame.GRASS_CMAP_START, 1.0 + inc / 2, inc)]
+
+        return ListedColormap([SimulationFrame.PREY_COLOR, SimulationFrame.PREDATOR_COLOR] + grass_cmap_list)
 
     def _button_next_turn_command(self):
         self.simulation_timer.trigger_action()

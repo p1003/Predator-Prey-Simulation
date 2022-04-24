@@ -1,8 +1,8 @@
 from enum import IntEnum
 
 class Species(IntEnum):
-    PREY = 1
-    PREDATOR = 2
+    PREY = 0
+    PREDATOR = 1
 
 class Directions(IntEnum):
     UP = 0
