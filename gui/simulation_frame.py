@@ -15,6 +15,7 @@ from gui.utils import show_askyesno
 class SimulationFrame:
     GRASS_CMAP = 'YlGn'
     GRASS_CMAP_START = 0.2
+    GRASS_CMAP_END = 0.8
     PREY_COLOR = 'royalblue'
     PREDATOR_COLOR = 'red'
 
@@ -34,7 +35,7 @@ class SimulationFrame:
 
         self.plot = self.fig.add_subplot(111)
         self.plot.imshow(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
-                         vmax=2 + self.config.max_plant_supply + 1)
+                         vmax=2 + self.config.max_plant_supply)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])
@@ -72,7 +73,7 @@ class SimulationFrame:
     def next_turn_update(self):
         self.plot.clear()
         self.plot.imshow(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
-                         vmax=2 + self.config.max_plant_supply + 1)
+                         vmax=2 + self.config.max_plant_supply)
 
         self.fig.gca().set_xticks([])
         self.fig.gca().set_yticks([])
@@ -81,8 +82,9 @@ class SimulationFrame:
 
     def _init_cmap(self):
         grass_cmap = plt.get_cmap(SimulationFrame.GRASS_CMAP)
-        inc = (1.0 - SimulationFrame.GRASS_CMAP_START) / (self.config.max_plant_supply + 1)
-        grass_cmap_list = [grass_cmap(x) for x in np.arange(SimulationFrame.GRASS_CMAP_START, 1.0 + inc / 2, inc)]
+        inc = (SimulationFrame.GRASS_CMAP_END - SimulationFrame.GRASS_CMAP_START) / (self.config.max_plant_supply + 1)
+        grass_cmap_list = [grass_cmap(x) for x in
+                           np.arange(SimulationFrame.GRASS_CMAP_START, SimulationFrame.GRASS_CMAP_END + inc / 2, inc)]
 
         return ListedColormap([SimulationFrame.PREY_COLOR, SimulationFrame.PREDATOR_COLOR] + grass_cmap_list)
 

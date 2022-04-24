@@ -84,7 +84,7 @@ class PopulationGraphFrame:
                      c=SimulationFrame.PREDATOR_COLOR)
         if self.show_variables['Grass'].get():
             plot_fun(self.x[self.n_last:], self.n_grass[self.n_last:], label='Grass', marker=marker,
-                     color=plt.get_cmap(SimulationFrame.GRASS_CMAP)(0.8))
+                     color=plt.get_cmap(SimulationFrame.GRASS_CMAP)(SimulationFrame.GRASS_CMAP_END))
 
         self.plot.set_title('Population graph')
         self.plot.legend(loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.21))
