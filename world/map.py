@@ -1,4 +1,5 @@
 from random import randrange
+from statistics import mode as mode
 
 import numpy as np
 
@@ -25,11 +26,8 @@ class MapTile:
         self.animals = ([a for a in animals if a.id != a_to_remove.id])
 
     def get_render_value(self):
-        if len(self.animals) == 1:  # single animal
-            return self.animals[0].species # 0 - prey, 1 - predator
-        elif self.animals:  # many animals
-            # TODO
-            return self.animals[0].species
+        if self.animals:  # animals - return the most frequent one; 0 - prey, 1 - predator
+            return mode(animal.species for animal in self.animals)
         else:  # no animals - plants
             return 2 + self.get_n_plants()
 
