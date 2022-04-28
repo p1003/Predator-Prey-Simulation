@@ -1,15 +1,14 @@
 from random import randrange
+
 import numpy as np
 
 from config import Config
-
-from world.enumerators import Species
 from world.animals import Animal
+from world.enumerators import Species
+from world.statistics import Statistics
 
-from world.abstracts import AbstractAnimal, AbstractMap, AbstractMapTile
 
-
-class MapTile(AbstractMapTile):
+class MapTile:
     """
     Class representing one tile of the map
     """
@@ -30,14 +29,18 @@ class MapTile(AbstractMapTile):
             return self.animals[0].species
         return 0
 
+    def get_n_plants(self):
+        return int(self.plant_supply)
 
-class Map(AbstractMap):
+
+class Map:
     """
     Class holding all entities on it
     """
 
     def __init__(self, config: Config):
         self.init(config=config)
+        self.statistics = Statistics(self)
 
     def init(self, config: Config):
         self.tiles = []
@@ -57,6 +60,8 @@ class Map(AbstractMap):
         self.init_animals(config.n_predator, config.n_prey, config.base_animal_energy)
     
     def init_animals(self, n_predator, n_prey, base_animal_energy):
+        Animal.reset_counts()
+
         for _ in range(n_predator):
             while True:
                 x = randrange(0,self.x_size)
@@ -102,8 +107,8 @@ class Map(AbstractMap):
         self._process_plants_eating_and_growing()
     
     def _clean_dead_animals(self):
-        alive: list[AbstractAnimal] =[]
-        dead: list[AbstractAnimal] = []
+        alive: list[Animal] =[]
+        dead: list[Animal] = []
         for animal in self.animals:
             dead.append(animal) if animal.isDead else alive.append(animal)
         
@@ -191,16 +196,3 @@ class Map(AbstractMap):
                 row.append(self.tiles[i][j])
             result_tiles.append(row)
         return result_tiles
-                
-
-    def get_n_prey(self):
-        # TODO: move to Statistics class
-        return 20
-
-    def get_n_predators(self):
-        # TODO move to Statistics class
-        return 30
-
-    def get_n_grass(self):
-        # TODO move to Statistics class
-        return 10

@@ -1,15 +1,24 @@
-from random import choice
+from __future__ import annotations
 
-from world.abstracts import AbstractMap, AbstractMapTile, AbstractAnimal
+from random import choice
+from typing import TYPE_CHECKING
+
 from world.enumerators import Species, Directions
 
+if TYPE_CHECKING:
+    from world import Map
+    from world.map import MapTile
+    from world.animals import Animal
 
-class Animal(AbstractAnimal):
+
+class Animal:
     """
     Tracks the animal's position, energy, species (rabbit/fox) and state (live/dead).
     """
+    n_prey = 0
+    n_predator = 0
 
-    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: AbstractMap):
+    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map):
         self.x = x
         self.y = y
         self.energy = init_energy
@@ -20,8 +29,14 @@ class Animal(AbstractAnimal):
         self.map = map
         #TODO: self.genome = ...
 
+        if self.species == Species.PREY:
+            Animal.n_prey += 1
+        elif self.species == Species.PREDATOR:
+            Animal.n_predator += 1
+        else:
+            raise ValueError(f'{self.species} is a wrong species')
 
-    def interact(self, other: AbstractAnimal):
+    def interact(self, other: Animal):
         """
         """
         if self.species == other.species:
@@ -42,10 +57,13 @@ class Animal(AbstractAnimal):
             other.die()
             self.energy += other.energy
 
-
-
     def die(self):
-        self.isDead = True
+        if not self.isDead:
+            self.isDead = True
+            if self.species == Species.PREY:
+                Animal.n_prey -= 1
+            else:
+                Animal.n_predator -= 1
 
 
     def move(self, direction, gridxsize, gridysize):
@@ -74,12 +92,17 @@ class Animal(AbstractAnimal):
 
     def choose_direction(self):
         x, y = self.get_position()
-        neighbourhood: list[list[AbstractMapTile]] = self.map.get_submap(x=x, y=y, radius=self.viewrange)
+        neighbourhood: list[list[MapTile]] = self.map.get_submap(x=x, y=y, radius=self.viewrange)
         # TODO: detection of other animals and food
         return choice(list(Directions))
 
     def get_position(self):
         return self.x, self.y
+
+    @classmethod
+    def reset_counts(cls):
+        cls.n_prey = 0
+        cls.n_predator = 0
 
 class Genome:
     """"""

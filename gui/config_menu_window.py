@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from config import Config
 from gui.utils import center_window
-from world.map import Map
+from world import Map
 
 
 class ConfigMenuWindow:
@@ -43,6 +43,18 @@ class ConfigMenuWindow:
         # base animal energy
         self.var_base_energy = tk.IntVar(value=self.config.base_animal_energy)
         row = self._add_row_entry(config_frame, row, 'Base animal energy: ', self.var_base_energy)
+
+        # plant regeneration ratio
+        self.var_plant_regen = tk.DoubleVar(value=self.config.plant_regeneration_ratio)
+        row = self._add_row_entry(config_frame, row, 'Grass regeneration ratio: ', self.var_plant_regen)
+
+        # max grass
+        self.var_max_grass = tk.IntVar(value=self.config.max_plant_supply)
+        row = self._add_row_entry(config_frame, row, 'Maximum grass units: ', self.var_max_grass)
+
+        # min reproduction energy
+        self.var_min_reproduction_energy = tk.IntVar(value=self.config.minimal_reproduction_energy)
+        row = self._add_row_entry(config_frame, row, 'Minimum reproduction energy: ', self.var_min_reproduction_energy)
 
         config_frame.pack()
 
@@ -85,6 +97,9 @@ class ConfigMenuWindow:
         self.config.n_predator = self.var_predator_count.get()
         self.config.n_prey = self.var_prey_count.get()
         self.config.base_animal_energy = self.var_base_energy.get()
+        self.config.plant_regeneration_ratio = self.var_plant_regen.get()
+        self.config.max_plant_supply = self.var_max_grass.get()
+        self.config.minimal_reproduction_energy = self.var_min_reproduction_energy.get()
 
     def _button_run_command(self):
         self._config_update()
@@ -100,4 +115,4 @@ class ConfigMenuWindow:
 
     def _button_save(self):
         self._config_update()
-        # TODO: save to some JSON
+        # TODO: save to some JSON?

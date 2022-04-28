@@ -7,7 +7,7 @@ from gui.config_menu_window import ConfigMenuWindow
 from gui.simulation_frame import SimulationFrame
 from gui.statistics_frame import StatisticsFrame
 from gui.utils import center_window, SimulationTimer
-from world.map import Map
+from world import Map
 
 
 class MainWindow:

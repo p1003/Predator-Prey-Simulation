@@ -8,6 +8,8 @@ from matplotlib.figure import Figure
 from gui.utils import show_askyesno
 
 
+# TODO: fix painting prey as predators when there are not prey
+# TODO: fix legend for no plots
 class SimulationFrame:
     CMAP = ListedColormap(['limegreen', 'yellow', 'red'])
 
