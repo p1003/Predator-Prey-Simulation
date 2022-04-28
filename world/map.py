@@ -15,8 +15,8 @@ class MapTile:
     """
 
     def __init__(self):
-        self.animals = []
-        self.plant_supply = 1.0
+        self.animals: list[Animal] = []
+        self.plant_supply: float = 1.0
 
     def put_animal(self, a: Animal):
         self.animals.append(a)
@@ -35,7 +35,6 @@ class MapTile:
         return int(self.plant_supply)
 
 
-# TODO: bug fix - predators eat plants (see the simulation without prey)
 # TODO: bug fix - method die sometimes called multiple times for a single animal
 class Map:
     """
@@ -47,15 +46,15 @@ class Map:
         self.statistics = Statistics(self)
 
     def init(self, config: Config):
-        self.tiles = []
-        self.animals = []
-        self.new_animals = []
-        self.animal_ID = 0
-        self.x_size = config.grid_xsize
-        self.y_size = config.grid_ysize
-        self.plant_regeneration_ratio = config.plant_regeneration_ratio
-        self.max_plant_supply = config.max_plant_supply
-        self.minimal_reproduction_energy = config.minimal_reproduction_energy
+        self.tiles: list[list[MapTile]] = []
+        self.animals: list[Animal] = []
+        self.new_animals: list[Animal] = []
+        self.animal_ID: int = 0
+        self.x_size: int = config.grid_xsize
+        self.y_size: int = config.grid_ysize
+        self.plant_regeneration_ratio: float = config.plant_regeneration_ratio
+        self.max_plant_supply: int = config.max_plant_supply
+        self.minimal_reproduction_energy: int = config.minimal_reproduction_energy
 
         for x in range(self.x_size):
             self.tiles.append([])
@@ -180,7 +179,7 @@ class Map:
                                 a.energy += supply
                                 supply = general_supply
 
-                self.tiles[x][y].plant_supply = 0.0
+                    self.tiles[x][y].plant_supply = 0.0
 
         for tiles_row in self.tiles:
             for tile in tiles_row:
