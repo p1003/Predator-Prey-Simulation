@@ -10,8 +10,6 @@ from matplotlib.figure import Figure
 from gui.utils import show_askyesno
 
 
-# TODO: fix painting prey as predators when there are not prey
-# TODO: fix legend for no plots
 class SimulationFrame:
     GRASS_CMAP = 'YlGn'
     GRASS_CMAP_START = 0.2
