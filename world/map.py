@@ -1,4 +1,5 @@
 from random import randrange
+from statistics import mode
 
 import numpy as np
 
@@ -14,25 +15,27 @@ class MapTile:
     """
 
     def __init__(self):
-        self.animals = []
-        self.plant_supply = 1.0
-    
+        self.animals: list[Animal] = []
+        self.plant_supply: float = 1.0
+
     def put_animal(self, a: Animal):
         self.animals.append(a)
-    
+
     def remove_animal(self, a_to_remove: Animal):
         animals = self.animals
         self.animals = ([a for a in animals if a.id != a_to_remove.id])
 
     def get_render_value(self):
-        if len(self.animals) > 0:
-            return self.animals[0].species
-        return 0
+        if self.animals:  # animals - return the most frequent one; 0 - prey, 1 - predator
+            return mode(animal.species for animal in self.animals)
+        else:  # no animals - plants
+            return 2 + self.get_n_plants()
 
     def get_n_plants(self):
         return int(self.plant_supply)
 
 
+# TODO: bug fix - method die sometimes called multiple times for a single animal
 class Map:
     """
     Class holding all entities on it
@@ -43,22 +46,22 @@ class Map:
         self.statistics = Statistics(self)
 
     def init(self, config: Config):
-        self.tiles = []
-        self.animals = []
-        self.new_animals = []
-        self.animal_ID = 0
-        self.x_size = config.grid_xsize
-        self.y_size = config.grid_ysize
-        self.plant_regeneration_ratio = config.plant_regeneration_ratio
-        self.max_plant_supply = config.max_plant_supply
-        self.minimal_reproduction_energy = config.minimal_reproduction_energy
+        self.tiles: list[list[MapTile]] = []
+        self.animals: list[Animal] = []
+        self.new_animals: list[Animal] = []
+        self.animal_ID: int = 0
+        self.x_size: int = config.grid_xsize
+        self.y_size: int = config.grid_ysize
+        self.plant_regeneration_ratio: float = config.plant_regeneration_ratio
+        self.max_plant_supply: int = config.max_plant_supply
+        self.minimal_reproduction_energy: int = config.minimal_reproduction_energy
 
         for x in range(self.x_size):
             self.tiles.append([])
             for _ in range(self.y_size):
                 self.tiles[x].append(MapTile())
         self.init_animals(config.n_predator, config.n_prey, config.base_animal_energy)
-    
+
     def init_animals(self, n_predator, n_prey, base_animal_energy):
         Animal.reset_counts()
 
@@ -66,7 +69,7 @@ class Map:
             while True:
                 x = randrange(0,self.x_size)
                 y = randrange(0,self.y_size)
-                if self.tiles[x][y].get_render_value() == 0:
+                if self.tiles[x][y].get_render_value() > list(Species)[-1]:  # if found an empty field
                     break
 
             self.add_animal(x=x, y=y, init_energy=base_animal_energy, species=Species.PREDATOR)
@@ -75,7 +78,7 @@ class Map:
             while True:
                 x = randrange(0,self.x_size)
                 y = randrange(0,self.y_size)
-                if self.tiles[x][y].get_render_value() == 0:
+                if self.tiles[x][y].get_render_value() > list(Species)[-1]:  # if found an empty field
                     break
 
             self.add_animal(x=x, y=y, init_energy=base_animal_energy, species=Species.PREY)
@@ -85,33 +88,27 @@ class Map:
         a = Animal(x=x, y=y, init_energy=init_energy, species=species, id=self.animal_ID, map=self)
         self.tiles[x][y].put_animal(a)
         self.animals.append(a)
-    
+
     def add_child(self, x: int, y: int, init_energy: int, species: int):
         self.animal_ID += 1
         self.new_animals.append(Animal(x=x, y=y, init_energy=init_energy, species=species, id=self.animal_ID, map=self))
 
     def get_map_for_render(self):
-        render_map = np.zeros((self.x_size, self.y_size), dtype=np.int8)
+        return np.array([[tile.get_render_value() for tile in row] for row in self.tiles], dtype=np.int8)
 
-        for x in range(self.x_size):
-            for y in range(self.y_size):
-                render_map[x][y] = self.tiles[x][y].get_render_value()
-        
-        return render_map
-    
     def next_turn(self):
         self._clean_dead_animals()
         self._move_animals()
         self._process_interactions()
         self._put_newborns_on_map()
         self._process_plants_eating_and_growing()
-    
+
     def _clean_dead_animals(self):
         alive: list[Animal] =[]
         dead: list[Animal] = []
         for animal in self.animals:
             dead.append(animal) if animal.isDead else alive.append(animal)
-        
+
         for animal in dead:
             x, y = animal.get_position()
             self.tiles[x][y].remove_animal(animal)
@@ -126,12 +123,12 @@ class Map:
             if not (new_x == old_x and new_y == old_y):
                 self.tiles[old_x][old_y].remove_animal(a)
                 self.tiles[new_x][new_y].put_animal(a)
-    
+
     def _process_interactions(self):
         interacted = {}
         for animal in self.animals:
             interacted[animal.id] = False
-        
+
         for animal in self.animals:
             if not interacted[animal.id]:
                 x, y = animal.get_position()
@@ -140,19 +137,19 @@ class Map:
                         self.tiles[x][y].animals[i].interact(self.tiles[x][y].animals[i+1])
                         interacted[self.tiles[x][y].animals[i].id] = True
                         interacted[self.tiles[x][y].animals[i+1].id] = True
-    
+
     def _put_newborns_on_map(self):
         for new_born in self.new_animals:
             x, y = new_born.get_position()
             self.animals.append(new_born)
             self.tiles[x][y].put_animal(new_born)
         self.new_animals.clear()
-    
+
     def _process_plants_eating_and_growing(self):
         interacted = {}
         for animal in self.animals:
             interacted[animal.id] = False
-        
+
         for animal in self.animals:
             if not interacted[animal.id]:
                 x, y = animal.get_position()
@@ -182,12 +179,12 @@ class Map:
                                 a.energy += supply
                                 supply = general_supply
 
-                self.tiles[x][y].plant_supply = 0.0
+                    self.tiles[x][y].plant_supply = 0.0
 
         for tiles_row in self.tiles:
             for tile in tiles_row:
                 tile.plant_supply = min(tile.plant_supply + self.plant_regeneration_ratio, self.max_plant_supply)
-    
+
     def get_submap(self, x: int, y: int, radius: int) -> list[list[MapTile]]:
         result_tiles: list[list[MapTile]] = []
         for i in range(max(x-radius, 0), min(x+radius+1, self.x_size - 1)):

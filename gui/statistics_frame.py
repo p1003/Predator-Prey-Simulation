@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
 
+from gui.simulation_frame import SimulationFrame
 from world import Map
 
 
@@ -74,15 +76,23 @@ class PopulationGraphFrame:
             plot_fun = self.plot.scatter
 
         marker = '.' if self.show_variables['Markers'].get() else None
+        is_empty_plot = True
         if self.show_variables['Prey'].get():
-            plot_fun(self.x[self.n_last:], self.n_prey[self.n_last:], label='Prey', marker=marker, c='yellow')
+            is_empty_plot = False
+            plot_fun(self.x[self.n_last:], self.n_prey[self.n_last:], label='Prey', marker=marker,
+                     c=SimulationFrame.PREY_COLOR)
         if self.show_variables['Predators'].get():
-            plot_fun(self.x[self.n_last:], self.n_predators[self.n_last:], label='Predators', marker=marker, c='red')
+            is_empty_plot = False
+            plot_fun(self.x[self.n_last:], self.n_predators[self.n_last:], label='Predators', marker=marker,
+                     c=SimulationFrame.PREDATOR_COLOR)
         if self.show_variables['Grass'].get():
-            plot_fun(self.x[self.n_last:], self.n_grass[self.n_last:], label='Grass', marker=marker, c='green')
+            is_empty_plot = False
+            plot_fun(self.x[self.n_last:], self.n_grass[self.n_last:], label='Grass', marker=marker,
+                     color=plt.get_cmap(SimulationFrame.GRASS_CMAP)(SimulationFrame.GRASS_CMAP_END))
 
         self.plot.set_title('Population graph')
-        self.plot.legend(loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.21))
+        if not is_empty_plot:
+            self.plot.legend(loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.21))
         self.plot.set_ylim(bottom=0)
 
         self.fig.gca().xaxis.set_major_locator(MaxNLocator(integer=True))

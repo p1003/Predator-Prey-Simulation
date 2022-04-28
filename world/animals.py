@@ -19,14 +19,14 @@ class Animal:
     n_predator = 0
 
     def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map):
-        self.x = x
-        self.y = y
-        self.energy = init_energy
-        self.species = species
-        self.id = id
-        self.isDead = False
-        self.viewrange = 1
-        self.map = map
+        self.x: int = x
+        self.y: int = y
+        self.energy: int = init_energy
+        self.species: Species = species
+        self.id: int = id
+        self.isDead: bool = False
+        self.viewrange: int = 1
+        self.map: Map = map
         #TODO: self.genome = ...
 
         if self.species == Species.PREY:
