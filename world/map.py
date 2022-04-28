@@ -1,5 +1,5 @@
 from random import randrange
-from statistics import mode as mode
+from statistics import mode
 
 import numpy as np
 
@@ -35,6 +35,8 @@ class MapTile:
         return int(self.plant_supply)
 
 
+# TODO: bug fix - predators eat plants (see the simulation without prey)
+# TODO: bug fix - method die sometimes called multiple times for a single animal
 class Map:
     """
     Class holding all entities on it
