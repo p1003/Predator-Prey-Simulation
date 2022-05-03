@@ -6,9 +6,7 @@ from world import Map
 if __name__ == '__main__':
     try:
         config = Config()
-
-        map = Map(config)
-
-        main_frame = MainWindow(config, map)
+        map_ = Map(config)
+        main_frame = MainWindow(config, map_)
     except Exception as err:
         show_error(f'Error. {err}')

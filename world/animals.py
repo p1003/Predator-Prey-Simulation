@@ -3,6 +3,7 @@ from __future__ import annotations
 from random import choice
 from typing import TYPE_CHECKING
 
+from config import Config
 from world.enumerators import Species, Directions
 
 if TYPE_CHECKING:
@@ -18,7 +19,7 @@ class Animal:
     n_prey = 0
     n_predator = 0
 
-    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map):
+    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map, config: Config):
         self.x: int = x
         self.y: int = y
         self.energy: int = init_energy
@@ -27,7 +28,8 @@ class Animal:
         self.isDead: bool = False
         self.viewrange: int = 1
         self.map: Map = map
-        #TODO: self.genome = ...
+        self.config: Config = config
+        # TODO: self.genome = ...
 
         if self.species == Species.PREY:
             Animal.n_prey += 1
@@ -40,9 +42,9 @@ class Animal:
         """
         """
         if self.species == other.species:
-            if self.energy > self.map.minimal_reproduction_energy and other.energy > self.map.minimal_reproduction_energy:
-                new_self_energy = self.energy//3 * 2
-                new_other_energy = other.energy//3 * 2
+            if self.energy > self.config.minimal_reproduction_energy and other.energy > self.config.minimal_reproduction_energy:
+                new_self_energy = self.energy // 3 * 2
+                new_other_energy = other.energy // 3 * 2
                 child_energy = (self.energy - new_self_energy) + (other.energy - new_other_energy)
                 self.energy = new_self_energy
                 other.energy = new_other_energy
@@ -65,7 +67,6 @@ class Animal:
             else:
                 Animal.n_predator -= 1
 
-
     def move(self, direction, gridxsize, gridysize):
         """
         Move a step on the grid. Each step consumes 1 energy; if no energy left, die.
@@ -79,16 +80,16 @@ class Animal:
         if direction == Directions.LEFT:
             self.x -= 1 if self.x > 0 else -1
         if direction == Directions.RIGHT:
-            self.x += 1 if self.x < gridxsize-1 else -1
+            self.x += 1 if self.x < gridxsize - 1 else -1
         if direction == Directions.UP:
-            self.y += 1 if self.y < gridysize-1 else -1
+            self.y += 1 if self.y < gridysize - 1 else -1
         if direction == Directions.DOWN:
             self.y -= 1 if self.y > 0 else -1
         if direction == Directions.STAY:
             pass
 
         if self.energy <= 0:
-            self.die()          #R.I.P.
+            self.die()  # R.I.P.
 
     def choose_direction(self):
         x, y = self.get_position()
@@ -103,6 +104,7 @@ class Animal:
     def reset_counts(cls):
         cls.n_prey = 0
         cls.n_predator = 0
+
 
 class Genome:
     """"""

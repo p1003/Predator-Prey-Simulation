@@ -30,7 +30,7 @@ class MainWindow:
         config_menu_window = ConfigMenuWindow(self.config, self.map)
         config_menu_window.start_loop()
 
-        self.map.init(self.config)
+        self.map.init()
 
         self.root = tk.Tk()
         self.root.title('Simulation')
