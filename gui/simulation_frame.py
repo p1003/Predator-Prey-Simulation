@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import tkinter as tk
 from tkinter import ttk
+from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +12,9 @@ from matplotlib.figure import Figure
 
 from gui.utils import show_askyesno
 
+if TYPE_CHECKING:
+    from gui.main_window import MainWindow
+
 
 class SimulationFrame:
     GRASS_CMAP = 'YlGn'
@@ -17,7 +23,7 @@ class SimulationFrame:
     PREY_COLOR = 'royalblue'
     PREDATOR_COLOR = 'red'
 
-    def __init__(self, main_window):
+    def __init__(self, main_window: MainWindow):
         self.main_window = main_window
         root = main_window.root
         self.config = main_window.config
@@ -64,6 +70,10 @@ class SimulationFrame:
         button_reset = ttk.Button(options_frame, text='Reset', command=self._button_reset_command)
         button_reset.pack(side='left')
 
+        self.button_refresh = tk.Button(options_frame, text='Refresh', command=self._button_refresh_command, bd=1,
+                                        relief=tk.GROOVE, width=6, fg='white', bg='#007aff')
+        self.button_refresh.pack(side='left')
+
         options_frame.pack(padx=2, pady=2)
 
         frame.pack(side='right', expand=True, fill='both')
@@ -108,3 +118,10 @@ class SimulationFrame:
         else:
             if was_running:
                 self.simulation_timer.start_timer()
+
+    def _button_refresh_command(self):
+        self.main_window.refresh_complex = not self.main_window.refresh_complex
+        if self.main_window.refresh_complex:
+            self.button_refresh.config(bg='#007aff')
+        else:
+            self.button_refresh.config(bg='#bcbcbc')
