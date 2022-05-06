@@ -14,7 +14,7 @@ class PopulationGraphFrame:
     def __init__(self, root, world_map: Map):
         self.statistics = world_map.statistics
 
-        frame = ttk.Frame(root, relief='ridge', borderwidth=2)
+        self.frame = ttk.Frame(root, relief='ridge', borderwidth=2)
 
         # plot
         self.n_turns = 0
@@ -31,14 +31,12 @@ class PopulationGraphFrame:
         self.fig.tight_layout()
         self.fig.subplots_adjust(bottom=0.15)
 
-        self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(expand=True, fill='x')
 
-        frame.pack(expand=False, fill='both')
-
         # options frame
-        options_frame = ttk.Frame(frame, relief='ridge', borderwidth=2)
+        options_frame = ttk.Frame(self.frame, relief='ridge', borderwidth=2)
 
         self.show_variables = {}
         for text in ['Prey', 'Predators', 'Grass', 'Markers']:
@@ -54,7 +52,8 @@ class PopulationGraphFrame:
 
         options_frame.pack(side='bottom', padx=2, pady=2)
 
-        # redraw
+    def pack(self, *args, **kwargs):
+        self.frame.pack(*args, **kwargs)
         self._redraw()
 
     def update(self):
@@ -112,9 +111,10 @@ class StatisticsFrame:
 
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
-        self.population_graph = PopulationGraphFrame(frame, map)
+        self.population_graph_frame = PopulationGraphFrame(frame, map)
+        self.population_graph_frame.pack(expand=False, fill='both')
 
         frame.pack(side='left', expand=True, fill='both')
 
     def next_turn_update(self):
-        self.population_graph.update()
+        self.population_graph_frame.update()
