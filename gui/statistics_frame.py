@@ -121,7 +121,12 @@ class PopulationStatisticsFrame:
 
         # population graph
         self.population_graph_frame = PopulationGraphFrame(self.frame, world_map)
-        self.population_graph_frame.pack(expand=True, anchor='n', fill='x')
+        self.population_graph_frame.pack(expand=False, fill='x')
+
+        # gene histograms button
+        self.button_gene_histograms = ttk.Button(self.frame, text='Show genome histograms',
+                                                 command=self._button_gene_histograms_command)
+        self.button_gene_histograms.pack(expand=False, fill='x')
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
@@ -132,6 +137,13 @@ class PopulationStatisticsFrame:
 
     def _redraw(self):
         self.population_graph_frame.update()
+
+    def _button_gene_histograms_command(self):
+        self.statistics_frame.negate_gene_histograms()
+        if self.statistics_frame.show_gene_histograms:
+            self.button_gene_histograms.config(text='Close genome histograms')
+        else:
+            self.button_gene_histograms.config(text='Show genome histograms')
 
 
 class GeneHistogramsFrame:
@@ -195,12 +207,15 @@ class GenomeStatisticsFrame:
         self.genome_histograms = []
         for i in range(N_GENES):
             gene_histograms = GeneHistogramsFrame(self.frame, self.statistics, GENE_NAMES[i], self.gene_ranges[i])
-            gene_histograms.pack(expand=False, fill='x')
+            gene_histograms.pack(expand=True, fill='x')
             self.genome_histograms.append(gene_histograms)
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
         self._redraw()
+
+    def unpack(self):
+        self.frame.pack_forget()
 
     def update(self):
         self.prey_gene_arrays, self.predator_gene_arrays = self.statistics.get_gene_arrays()
@@ -216,6 +231,8 @@ class StatisticsFrame:
         root = main_window.root
         map_ = main_window.map
 
+        self.show_gene_histograms = False
+
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
         self.population_statistics_frame = PopulationStatisticsFrame(frame, map_, self)
@@ -223,10 +240,18 @@ class StatisticsFrame:
 
         self.genome_histograms_frame = GenomeStatisticsFrame(frame, map_)
         self.genome_histograms_frame.pack(side='left', expand=True, fill='both')
+        self.genome_histograms_frame.unpack()
 
         frame.pack(side='left', expand=True, fill='both')
 
     def next_turn_update(self, refresh_complex=True):
         self.population_statistics_frame.update()
-        if refresh_complex:
+        if refresh_complex and self.show_gene_histograms:
             self.genome_histograms_frame.update()
+
+    def negate_gene_histograms(self):
+        self.show_gene_histograms = not self.show_gene_histograms
+        if self.show_gene_histograms:
+            self.genome_histograms_frame.pack()
+        else:
+            self.genome_histograms_frame.unpack()
