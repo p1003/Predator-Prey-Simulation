@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from config import Config
 from world.enumerators import Species, Directions
+from world.genome import Genome
 
 if TYPE_CHECKING:
     from world import Map
@@ -19,17 +20,17 @@ class Animal:
     n_prey = 0
     n_predator = 0
 
-    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map, config: Config):
-        self.x: int = x
-        self.y: int = y
-        self.energy: int = init_energy
-        self.species: Species = species
-        self.id: int = id
+    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map, config: Config, genome: Genome = Genome()):
+        self.x = x
+        self.y = y
+        self.energy = init_energy
+        self.species = species
+        self.id = id
         self.isDead: bool = False
-        self.viewrange: int = 1
-        self.map: Map = map
-        self.config: Config = config
-        # TODO: self.genome = ...
+        self.map = map
+        self.config = config
+        self.genome = genome
+        self.energy_consumption = self.genome.calculate_energy_consumption()
 
         if self.species == Species.PREY:
             Animal.n_prey += 1
@@ -75,7 +76,7 @@ class Animal:
         Arguments:
             direction {int} -- direction to move: UP: 0, DOWN: 1, LEFT: 2, RIGHT: 3, STAY: 4
         """
-        self.energy -= 1
+        self.energy -= int(self.energy_consumption)
 
         if direction == Directions.LEFT:
             self.x -= 1 if self.x > 0 else -1
@@ -92,10 +93,14 @@ class Animal:
             self.die()  # R.I.P.
 
     def choose_direction(self):
-        x, y = self.get_position()
-        neighbourhood: list[list[MapTile]] = self.map.get_submap(x=x, y=y, radius=self.viewrange)
-        # TODO: detection of other animals and food
-        return choice(list(Directions))
+        if self.config.simulate_genomes:
+            # TODO: different behavior for prey and predator
+            x, y = self.get_position()
+            neighbourhood: list[list[MapTile]] = self.map.get_submap(x=x, y=y, radius=int(self.genome.viewrange))
+            # TODO: detection of other animals and food
+            return choice(list(Directions))
+        else:
+            return choice(list(Directions))
 
     def get_position(self):
         return self.x, self.y
@@ -104,7 +109,3 @@ class Animal:
     def reset_counts(cls):
         cls.n_prey = 0
         cls.n_predator = 0
-
-
-class Genome:
-    """"""

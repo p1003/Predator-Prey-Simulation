@@ -26,3 +26,5 @@ class Statistics:
 
     def get_n_grass(self):
         return sum(tile.get_n_plants() for row in self.world_map.tiles for tile in row)
+
+    # TODO: methods for gene histograms
