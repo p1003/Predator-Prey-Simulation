@@ -113,6 +113,27 @@ class PopulationGraphFrame:
         self._redraw()
 
 
+class PopulationStatisticsFrame:
+    def __init__(self, root, world_map: Map, statistics_frame: StatisticsFrame):
+        self.statistics_frame = statistics_frame
+
+        self.frame = ttk.Frame(root, relief='groove', borderwidth=3)
+
+        # population graph
+        self.population_graph_frame = PopulationGraphFrame(self.frame, world_map)
+        self.population_graph_frame.pack(expand=True, anchor='n', fill='x')
+
+    def pack(self, *args, **kwargs):
+        self.frame.pack(*args, **kwargs)
+        self._redraw()
+
+    def update(self):
+        self._redraw()
+
+    def _redraw(self):
+        self.population_graph_frame.update()
+
+
 class GeneHistogramsFrame:
     def __init__(self, root, statistics: Statistics, gene_name: str, gene_range: tuple[float, float],
                  prey_genes: list | np.array = None, predator_genes: list | np.array = None):
@@ -197,8 +218,8 @@ class StatisticsFrame:
 
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
-        self.population_graph_frame = PopulationGraphFrame(frame, map_)
-        self.population_graph_frame.pack(side='right', anchor='n', expand=True, fill='x')
+        self.population_statistics_frame = PopulationStatisticsFrame(frame, map_, self)
+        self.population_statistics_frame.pack(side='right', expand=True, fill='both')
 
         self.genome_histograms_frame = GenomeStatisticsFrame(frame, map_)
         self.genome_histograms_frame.pack(side='left', expand=True, fill='both')
@@ -206,6 +227,6 @@ class StatisticsFrame:
         frame.pack(side='left', expand=True, fill='both')
 
     def next_turn_update(self, refresh_complex=True):
-        self.population_graph_frame.update()
+        self.population_statistics_frame.update()
         if refresh_complex:
             self.genome_histograms_frame.update()
