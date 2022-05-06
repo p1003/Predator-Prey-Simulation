@@ -7,11 +7,10 @@ import numpy as np
 from config import Config
 from world.animals import Animal
 from world.enumerators import Species
+from world.genome import N_GENES
 
 if TYPE_CHECKING:
     from map import Map
-
-N_GENES = 2
 
 
 class Statistics:

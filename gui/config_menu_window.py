@@ -5,6 +5,7 @@ from typing import Type
 from config import Config
 from gui.utils import center_window
 from world import Map
+from world.genome import GENE_NAMES
 
 
 class RangeVar:
@@ -41,11 +42,11 @@ class GenomeConfigMenuFrame:
 
         # viewrange
         self.var_viewrange = RangeVar(tk.IntVar, self.config.viewrange_range)
-        self._add_row_range_spinboxes(ranges_frame, 'View range: ', self.var_viewrange)
+        self._add_row_range_spinboxes(ranges_frame, GENE_NAMES[0] + ': ', self.var_viewrange)
 
         # energy consumption ratio
         self.var_energy_consumption = RangeVar(tk.DoubleVar, self.config.energy_consumption_ratio_range)
-        self._add_row_range_spinboxes(ranges_frame, 'Energy consumption ratio: ', self.var_energy_consumption, inc=0.1)
+        self._add_row_range_spinboxes(ranges_frame, GENE_NAMES[1] + ': ', self.var_energy_consumption, inc=0.1)
 
         ranges_frame.pack()
 
