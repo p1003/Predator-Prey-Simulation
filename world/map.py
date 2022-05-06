@@ -52,7 +52,7 @@ class Map:
         self.config = config
 
         self.init()
-        self.statistics = Statistics(self)
+        self.statistics = Statistics(self.config, self)
 
     def init(self):
         self.tiles = []
