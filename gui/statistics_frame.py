@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import tkinter as tk
 from tkinter import ttk
+from typing import TYPE_CHECKING
 
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -8,6 +12,11 @@ from matplotlib.ticker import MaxNLocator
 
 from gui.simulation_frame import SimulationFrame
 from world import Map
+from world.genome import N_GENES, GENE_NAMES
+from world.statistics import Statistics
+
+if TYPE_CHECKING:
+    from gui.main_window import MainWindow
 
 
 class PopulationGraphFrame:
@@ -104,17 +113,89 @@ class PopulationGraphFrame:
         self._redraw()
 
 
+class GeneHistogramsFrame:
+    def __init__(self, root, statistics: Statistics, gene_name: str, gene_range: tuple[float, float],
+                 prey_genes: list | np.array = None, predator_genes: list | np.array = None):
+        self.root = root
+        self.statistics = statistics
+        self.gene_name = gene_name
+        self.gene_range = gene_range
+        self.prey_genes = prey_genes if prey_genes is not None else []
+        self.predator_genes = predator_genes if predator_genes is not None else []
+
+        self.frame = ttk.Frame(root, relief='ridge', borderwidth=2)
+
+        self.fig = Figure(figsize=(4, 1.5))
+
+        self.prey_plot = self.fig.add_subplot(1, 2, 1)
+        self.predator_plot = self.fig.add_subplot(1, 2, 2)
+
+        self.fig.suptitle(f'{self.gene_name} histogram')
+        self.fig.tight_layout()
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(expand=True, fill='x')
+
+    def pack(self, *args, **kwargs):
+        self.frame.pack(*args, **kwargs)
+        self._redraw()
+
+    def update(self, prey_genes: np.array, predator_genes: np.array):
+        self.prey_genes = prey_genes
+        self.predator_genes = predator_genes
+        self._redraw()
+
+    def _redraw(self):
+        self.prey_plot.clear()
+        self.prey_plot.set_title(f'Prey')
+        self.predator_plot.clear()
+        self.predator_plot.set_title(f'Predator')
+
+        self.fig.suptitle(f'{self.gene_name} histogram')
+
+        self.prey_plot.hist(self.prey_genes, bins=10, range=self.gene_range)
+        self.predator_plot.hist(self.predator_genes, bins=10, range=self.gene_range)
+
+
+class GenomeStatisticsFrame:
+    def __init__(self, root, world_map: Map):
+        self.statistics = world_map.statistics
+        self.config = world_map.config
+        self.gene_ranges = self.config.get_gene_ranges()
+
+        self.frame = ttk.Frame(root, relief='groove', borderwidth=3)
+
+        prey_gene_arrays, predator_gene_arrays = self.statistics.get_gene_arrays()
+        self.gene_histograms = []
+        for i in range(N_GENES):
+            gene_histograms = GeneHistogramsFrame(self.frame, self.statistics, GENE_NAMES[i], self.gene_ranges[i],
+                                                  prey_gene_arrays[i], predator_gene_arrays[i])
+            gene_histograms.pack(fill='x')
+            self.gene_histograms.append(gene_histograms)
+
+    def pack(self, *args, **kwargs):
+        self.frame.pack(*args, **kwargs)
+
+    def update(self):
+        pass
+
+
 class StatisticsFrame:
-    def __init__(self, main_window):
+    def __init__(self, main_window: MainWindow):
         root = main_window.root
-        map = main_window.map
+        map_ = main_window.map
 
         frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
-        self.population_graph_frame = PopulationGraphFrame(frame, map)
-        self.population_graph_frame.pack(expand=False, fill='both')
+        self.population_graph_frame = PopulationGraphFrame(frame, map_)
+        self.population_graph_frame.pack(side='right', anchor='n', expand=True, fill='x')
+
+        self.all_genome_histograms_frame = GenomeStatisticsFrame(frame, map_)
+        self.all_genome_histograms_frame.pack(side='left', expand=True, fill='both')
 
         frame.pack(side='left', expand=True, fill='both')
 
     def next_turn_update(self):
         self.population_graph_frame.update()
+        self.all_genome_histograms_frame.update()
