@@ -6,9 +6,27 @@ from gui.utils import center_window
 from world import Map
 
 
+class GenomeConfigMenuFrame:
+    def __init__(self, root, config: Config, world_map: Map):
+        self.root = root
+        self.config = config
+        self.map = world_map
+
+        frame = ttk.Frame(self.root, relief='groove', borderwidth=2)
+
+        # TODO: take from config
+        var_simulate_genome = tk.BooleanVar(value=True)
+        button_simulate_genome = ttk.Checkbutton(frame, text='Simulate genome', variable=var_simulate_genome)
+        button_simulate_genome.pack()
+
+        # TODO - gene ranges
+
+        frame.pack()
+
+
 class ConfigMenuWindow:
-    def __init__(self, config: Config, map: Map):
-        self.map = map
+    def __init__(self, config: Config, world_map: Map):
+        self.map = world_map
         self.config = config
 
         self.root = tk.Tk()
@@ -34,29 +52,33 @@ class ConfigMenuWindow:
 
         # predator count
         self.var_predator_count = tk.IntVar(value=self.config.n_predator)
-        row = self._add_row_entry(config_frame, row, 'Predator count: ', self.var_predator_count)
+        row = self._add_row_spinbox(config_frame, row, 'Predator count: ', self.var_predator_count)
 
         # prey count
         self.var_prey_count = tk.IntVar(value=self.config.n_prey)
-        row = self._add_row_entry(config_frame, row, 'Prey count: ', self.var_prey_count)
+        row = self._add_row_spinbox(config_frame, row, 'Prey count: ', self.var_prey_count)
 
         # base animal energy
         self.var_base_energy = tk.IntVar(value=self.config.base_animal_energy)
-        row = self._add_row_entry(config_frame, row, 'Base animal energy: ', self.var_base_energy)
+        row = self._add_row_spinbox(config_frame, row, 'Base animal energy: ', self.var_base_energy)
 
         # plant regeneration ratio
         self.var_plant_regen = tk.DoubleVar(value=self.config.plant_regeneration_ratio)
-        row = self._add_row_entry(config_frame, row, 'Grass regeneration ratio: ', self.var_plant_regen)
+        row = self._add_row_spinbox(config_frame, row, 'Grass regeneration ratio: ', self.var_plant_regen)
 
         # max grass
         self.var_max_grass = tk.IntVar(value=self.config.max_plant_supply)
-        row = self._add_row_entry(config_frame, row, 'Maximum grass units: ', self.var_max_grass)
+        row = self._add_row_spinbox(config_frame, row, 'Maximum grass units: ', self.var_max_grass)
 
         # min reproduction energy
         self.var_min_reproduction_energy = tk.IntVar(value=self.config.minimal_reproduction_energy)
-        row = self._add_row_entry(config_frame, row, 'Minimum reproduction energy: ', self.var_min_reproduction_energy)
+        row = self._add_row_spinbox(config_frame, row, 'Minimum reproduction energy: ',
+                                    self.var_min_reproduction_energy)
 
         config_frame.pack()
+
+        # config genome frame
+        self.config_genome_frame = GenomeConfigMenuFrame(self.root, self.config, self.map)
 
         # control frame
         control_frame = ttk.Frame(self.root, relief='ridge', borderwidth=2)
@@ -81,7 +103,7 @@ class ConfigMenuWindow:
         self.root.mainloop()
 
     @staticmethod
-    def _add_row_entry(config_frame, row, text, textvariable):
+    def _add_row_spinbox(config_frame, row, text, textvariable):
         label = ttk.Label(config_frame, text=text)
         spinbox = ttk.Spinbox(config_frame, from_=0, to=99999999, textvariable=textvariable, width=5)
 
@@ -100,6 +122,7 @@ class ConfigMenuWindow:
         self.config.plant_regeneration_ratio = self.var_plant_regen.get()
         self.config.max_plant_supply = self.var_max_grass.get()
         self.config.minimal_reproduction_energy = self.var_min_reproduction_energy.get()
+        # TODO: self.config.simulate_genome = self.var_simulate_genome.get()
 
     def _button_run_command(self):
         self._config_update()
