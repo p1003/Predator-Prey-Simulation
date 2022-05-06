@@ -120,22 +120,23 @@ class GeneHistogramsFrame:
         self.statistics = statistics
         self.gene_name = gene_name
         self.gene_range = gene_range
+
         self.prey_genes = prey_genes if prey_genes is not None else []
         self.predator_genes = predator_genes if predator_genes is not None else []
 
         self.frame = ttk.Frame(root, relief='ridge', borderwidth=2)
 
-        self.fig = Figure(figsize=(4, 1.5))
+        self.fig = Figure(figsize=(5, 1.6))
 
         self.prey_plot = self.fig.add_subplot(1, 2, 1)
         self.predator_plot = self.fig.add_subplot(1, 2, 2)
 
-        self.fig.suptitle(f'{self.gene_name} histogram')
+        self.fig.suptitle(f'{self.gene_name}')
         self.fig.tight_layout()
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(expand=True, fill='x')
+        self.canvas.get_tk_widget().pack(expand=True, fill='both')
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
@@ -150,12 +151,14 @@ class GeneHistogramsFrame:
         self.prey_plot.clear()
         self.prey_plot.set_title(f'Prey')
         self.predator_plot.clear()
-        self.predator_plot.set_title(f'Predator')
+        self.predator_plot.set_title(f'Predators')
 
-        self.fig.suptitle(f'{self.gene_name} histogram')
+        self.fig.suptitle(f'{self.gene_name}')
 
         self.prey_plot.hist(self.prey_genes, bins=10, range=self.gene_range)
         self.predator_plot.hist(self.predator_genes, bins=10, range=self.gene_range)
+
+        self.canvas.draw()
 
 
 class GenomeStatisticsFrame:
@@ -164,21 +167,27 @@ class GenomeStatisticsFrame:
         self.config = world_map.config
         self.gene_ranges = self.config.get_gene_ranges()
 
+        self.prey_gene_arrays, self.predator_gene_arrays = self.statistics.get_gene_arrays()
+
         self.frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
-        prey_gene_arrays, predator_gene_arrays = self.statistics.get_gene_arrays()
-        self.gene_histograms = []
+        self.genome_histograms = []
         for i in range(N_GENES):
-            gene_histograms = GeneHistogramsFrame(self.frame, self.statistics, GENE_NAMES[i], self.gene_ranges[i],
-                                                  prey_gene_arrays[i], predator_gene_arrays[i])
-            gene_histograms.pack(fill='x')
-            self.gene_histograms.append(gene_histograms)
+            gene_histograms = GeneHistogramsFrame(self.frame, self.statistics, GENE_NAMES[i], self.gene_ranges[i])
+            gene_histograms.pack(expand=False, fill='x')
+            self.genome_histograms.append(gene_histograms)
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
+        self._redraw()
 
     def update(self):
-        pass
+        self.prey_gene_arrays, self.predator_gene_arrays = self.statistics.get_gene_arrays()
+        self._redraw()
+
+    def _redraw(self):
+        for i, gene_histograms in enumerate(self.genome_histograms):
+            gene_histograms.update(self.prey_gene_arrays[i], self.predator_gene_arrays[i])
 
 
 class StatisticsFrame:
@@ -191,11 +200,12 @@ class StatisticsFrame:
         self.population_graph_frame = PopulationGraphFrame(frame, map_)
         self.population_graph_frame.pack(side='right', anchor='n', expand=True, fill='x')
 
-        self.all_genome_histograms_frame = GenomeStatisticsFrame(frame, map_)
-        self.all_genome_histograms_frame.pack(side='left', expand=True, fill='both')
+        self.genome_histograms_frame = GenomeStatisticsFrame(frame, map_)
+        self.genome_histograms_frame.pack(side='left', expand=True, fill='both')
 
         frame.pack(side='left', expand=True, fill='both')
 
-    def next_turn_update(self):
+    def next_turn_update(self, refresh_complex=True):
         self.population_graph_frame.update()
-        self.all_genome_histograms_frame.update()
+        if refresh_complex:
+            self.genome_histograms_frame.update()

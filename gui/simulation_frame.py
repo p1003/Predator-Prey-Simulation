@@ -78,15 +78,16 @@ class SimulationFrame:
 
         frame.pack(side='right', expand=True, fill='both')
 
-    def next_turn_update(self):
-        self.plot.clear()
-        self.plot.pcolor(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
-                         vmax=2 + self.config.max_plant_supply)
+    def next_turn_update(self, refresh_complex=True):
+        if refresh_complex:
+            self.plot.clear()
+            self.plot.pcolor(self.map.get_map_for_render(), cmap=self.cmap, vmin=0,
+                             vmax=2 + self.config.max_plant_supply)
 
-        self.fig.gca().set_xticks([])
-        self.fig.gca().set_yticks([])
+            self.fig.gca().set_xticks([])
+            self.fig.gca().set_yticks([])
 
-        self.canvas.draw()
+            self.canvas.draw()
 
     def _init_cmap(self):
         grass_cmap = plt.get_cmap(SimulationFrame.GRASS_CMAP)
