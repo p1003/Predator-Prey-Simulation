@@ -8,7 +8,7 @@ class Genome:
     
     def calculate_energy_consumption(self) -> float:
         # TODO: check if this works
-        return (self.viewrange - 1.) * self.energy_consumption_ratio
+        return (self.viewrange) * self.energy_consumption_ratio
 
     def get_genes(self) -> list[float]:
         return [

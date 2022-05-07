@@ -76,8 +76,10 @@ class Animal:
         Arguments:
             direction {int} -- direction to move: UP: 0, DOWN: 1, LEFT: 2, RIGHT: 3, STAY: 4
         """
+        # TODO: repair
         self.energy -= int(self.energy_consumption)
 
+        # TODO: toroid map movement
         if direction == Directions.LEFT:
             self.x -= 1 if self.x > 0 else -1
         if direction == Directions.RIGHT:

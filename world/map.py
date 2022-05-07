@@ -127,9 +127,9 @@ class Map:
                 x, y = animal.get_position()
                 if len(self.tiles[x][y].animals) > 1:
                     for i in range(len(self.tiles[x][y].animals) // 2):
-                        self.tiles[x][y].animals[i].interact(self.tiles[x][y].animals[i + 1])
-                        interacted[self.tiles[x][y].animals[i].id] = True
-                        interacted[self.tiles[x][y].animals[i + 1].id] = True
+                        self.tiles[x][y].animals[i*2].interact(self.tiles[x][y].animals[i*2 + 1])
+                        interacted[self.tiles[x][y].animals[i*2].id] = True
+                        interacted[self.tiles[x][y].animals[i*2 + 1].id] = True
 
     def _put_newborns_on_map(self):
         for new_born in self.new_animals:
