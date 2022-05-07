@@ -58,12 +58,12 @@ class MainWindow:
     def start_loop(self):
         self.root.mainloop()
 
-    def update_complex(self):
-        self.simulation_frame.next_turn_update()
+    def refresh(self):
+        self.statistics_frame.refresh()
+        self.simulation_frame.refresh()
 
     def _next_turn_update(self):
         self.map.next_turn()
 
-        self.statistics_frame.next_turn_update()
-        if self.refresh_complex:
-            self.update_complex()
+        self.statistics_frame.next_turn_update(self.refresh_complex)
+        self.simulation_frame.next_turn_update(self.refresh_complex)
