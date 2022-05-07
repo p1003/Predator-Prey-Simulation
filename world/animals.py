@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from random import choice
+from random import choice, random
 from typing import TYPE_CHECKING
 
 from config import Config
@@ -76,8 +76,10 @@ class Animal:
         Arguments:
             direction {int} -- direction to move: UP: 0, DOWN: 1, LEFT: 2, RIGHT: 3, STAY: 4
         """
-        # TODO: repair
-        self.energy -= int(self.energy_consumption)
+        energy_int = int(self.energy_consumption)
+        if random() > self.energy_consumption % 1:
+            energy_int += 1
+        self.energy = max(0, self.energy - energy_int)
 
         # TODO: toroid map movement
         if direction == Directions.LEFT:
