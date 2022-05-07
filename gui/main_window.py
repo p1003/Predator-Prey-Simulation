@@ -58,6 +58,10 @@ class MainWindow:
     def start_loop(self):
         self.root.mainloop()
 
+    def refresh(self):
+        self.statistics_frame.refresh()
+        self.simulation_frame.refresh()
+
     def _next_turn_update(self):
         self.map.next_turn()
 

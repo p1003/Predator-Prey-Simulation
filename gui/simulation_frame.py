@@ -89,6 +89,9 @@ class SimulationFrame:
 
             self.canvas.draw()
 
+    def refresh(self):
+        self.next_turn_update()
+
     def _init_cmap(self):
         grass_cmap = plt.get_cmap(SimulationFrame.GRASS_CMAP)
         inc = (SimulationFrame.GRASS_CMAP_END - SimulationFrame.GRASS_CMAP_START) / (self.config.max_plant_supply + 1)
@@ -122,6 +125,8 @@ class SimulationFrame:
 
     def _button_refresh_command(self):
         self.main_window.refresh_complex = not self.main_window.refresh_complex
+        if self.main_window.refresh_complex:
+            self.main_window.refresh()
         if self.main_window.refresh_complex:
             self.button_refresh.config(bg='#007aff')
         else:

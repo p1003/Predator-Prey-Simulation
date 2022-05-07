@@ -212,7 +212,7 @@ class GenomeStatisticsFrame:
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
-        self._redraw()
+        self.update()
 
     def unpack(self):
         self.frame.pack_forget()
@@ -247,6 +247,10 @@ class StatisticsFrame:
     def next_turn_update(self, refresh_complex=True):
         self.population_statistics_frame.update()
         if refresh_complex and self.show_gene_histograms:
+            self.genome_histograms_frame.update()
+
+    def refresh(self):
+        if self.show_gene_histograms:
             self.genome_histograms_frame.update()
 
     def negate_gene_histograms(self):
