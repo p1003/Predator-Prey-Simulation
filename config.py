@@ -14,8 +14,12 @@ class Config:
         self.minimal_reproduction_energy = 30
 
         self.simulate_genomes = True
-        self.viewrange_range = (0, 5)
+        self.viewrange_range = (0., 5.)
         self.energy_consumption_ratio_range = (0.5, 1.5)
 
+
+        self.mutation_ratio = 0.05
+    
     def get_gene_ranges(self):
         return [self.viewrange_range, self.energy_consumption_ratio_range]
+
