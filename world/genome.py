@@ -4,6 +4,12 @@ from random import uniform
 
 from config import Config
 
+N_GENES = 2
+GENE_NAMES = [
+    'View range',
+    'Energy consumption ratio'
+]
+
 # TODO: add cost (energy)
 class Genome:
     """"""

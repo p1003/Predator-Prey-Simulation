@@ -15,6 +15,8 @@ class MainWindow:
         self.config = config
         self.map = map
 
+        self.refresh_complex = True
+
         self.root = None
 
         self.simulation_timer = None
@@ -56,8 +58,12 @@ class MainWindow:
     def start_loop(self):
         self.root.mainloop()
 
+    def refresh(self):
+        self.statistics_frame.refresh()
+        self.simulation_frame.refresh()
+
     def _next_turn_update(self):
         self.map.next_turn()
 
-        self.simulation_frame.next_turn_update()
-        self.statistics_frame.next_turn_update()
+        self.statistics_frame.next_turn_update(self.refresh_complex)
+        self.simulation_frame.next_turn_update(self.refresh_complex)
