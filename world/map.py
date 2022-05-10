@@ -181,9 +181,11 @@ class Map:
 
     def get_submap(self, x: int, y: int, radius: int) -> list[list[MapTile]]:
         result_tiles: list[list[MapTile]] = []
-        for i in range(max(x - radius, 0), min(x + radius + 1, self.config.grid_xsize - 1)):
+        for i in range(x - radius, x + radius + 1):
             row: list[MapTile] = []
-            for j in range(max(y - radius, 0), min(y + radius + 1, self.config.grid_ysize - 1)):
-                row.append(self.tiles[i][j])
+            for j in range(y - radius, y + radius + 1):
+                x_size = self.config.grid_xsize
+                y_size = self.config.grid_ysize
+                row.append(self.tiles[(i + x_size) % x_size][(j + y_size) % y_size])
             result_tiles.append(row)
         return result_tiles

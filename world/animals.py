@@ -81,15 +81,15 @@ class Animal:
             energy_int += 1
         self.energy = max(0, self.energy - energy_int)
 
-        # TODO: toroid map movement
+        # TODO: check toroid map
         if direction == Directions.LEFT:
-            self.x -= 1 if self.x > 0 else -1
+            self.x = (self.x + gridxsize - 1) % gridxsize
         if direction == Directions.RIGHT:
-            self.x += 1 if self.x < gridxsize - 1 else -1
+            self.x = (self.x + gridxsize + 1) % gridxsize
         if direction == Directions.UP:
-            self.y += 1 if self.y < gridysize - 1 else -1
+            self.y = (self.y + gridysize - 1) % gridysize
         if direction == Directions.DOWN:
-            self.y -= 1 if self.y > 0 else -1
+            self.y = (self.y + gridysize + 1) % gridysize
         if direction == Directions.STAY:
             pass
 
