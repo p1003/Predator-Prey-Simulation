@@ -150,7 +150,21 @@ class Animal:
                     directions_weights[x_direction.value] += choice_map[i][j] * x_weight * distance_weight
                     directions_weights[y_direction.value] += choice_map[i][j] * y_weight * distance_weight
 
-        directions_weights = np.array([max(0., weight) for weight in directions_weights])
+        # below lines handles negative values
+        for i in range(4):
+            if directions_weights[i] < 0.:
+                if i%2 == 0:
+                    directions_weights[i+1] -= directions_weights[i]
+                    directions_weights[i] = 0.
+                else:
+                    directions_weights[i-1] -= directions_weights[i]
+                    directions_weights[i] = 0.
+        
+        if directions_weights[4] < 0.:
+            for i in range(4):
+                directions_weights[i] -= directions_weights[4]/4
+            directions_weights[4] = 0.
+        directions_weights = np.array(directions_weights)
         directions_weights /= directions_weights.sum()
         return Directions(np.random.choice(a=np.array([0, 1, 2, 3, 4]), size=1, p=directions_weights))
 

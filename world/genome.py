@@ -54,7 +54,7 @@ class Genome:
             new_genes.append(Genome._mutate_gene(gene=(first_genes[i] + second_genes[i])/2, config=config, is_additive=i<2))
         viewrange_min, viewrange_max = config.viewrange_range
         energy_consumption_ratio_min, energy_consumption_ratio_max = config.energy_consumption_ratio_range
-        print(new_genes)
+
         return Genome(
             viewrange=max(viewrange_min, min(viewrange_max, new_genes[0])),
             energy_consumption_ratio=max(energy_consumption_ratio_min, min(energy_consumption_ratio_max, new_genes[1])),
