@@ -6,6 +6,7 @@ import numpy as np
 from config import Config
 from world.animals import Animal
 from world.enumerators import Species
+from world.genome import Genome
 from world.statistics import Statistics
 
 
@@ -25,17 +26,29 @@ class MapTile:
         animals = self.animals
         self.animals = ([a for a in animals if a.id != a_to_remove.id])
 
-    def get_render_value(self):
+    def get_render_value(self) -> int:
         if self.animals:  # animals - return the most frequent one; 0 - prey, 1 - predator
             return mode(animal.species for animal in self.animals)
         else:  # no animals - plants
             return 2 + self.get_n_plants()
 
-    def is_empty(self):
+    def is_empty(self) -> int:
         return len(self.animals) == 0
 
-    def get_n_plants(self):
+    def get_n_plants(self) -> int:
         return int(self.plant_supply)
+    
+    def get_animal_counts(self) -> tuple[int, int]:
+        prey_n: int = 0
+        predator_n: int = 0
+        for animal in self.animals:
+            if animal.species == Species.PREY:
+                prey_n += 1
+            else:
+                predator_n += 1
+        
+        return prey_n, predator_n
+
 
 
 # TODO: bug fix - method die sometimes called multiple times for a single animal
@@ -72,10 +85,10 @@ class Map:
         self.tiles[x][y].put_animal(a)
         self.animals.append(a)
 
-    def add_child(self, x: int, y: int, init_energy: int, species: Species):
+    def add_child(self, x: int, y: int, init_energy: int, species: Species, genome: Genome):
         self.animal_ID += 1
         self.new_animals.append(
-            Animal(x=x, y=y, init_energy=init_energy, species=species, id=self.animal_ID, map=self, config=self.config))
+            Animal(x=x, y=y, init_energy=init_energy, species=species, id=self.animal_ID, map=self, config=self.config, genome=genome))
 
     def get_map_for_render(self):
         return np.array([[tile.get_render_value() for tile in row] for row in self.tiles], dtype=np.int8)
@@ -136,6 +149,7 @@ class Map:
             x, y = new_born.get_position()
             self.animals.append(new_born)
             self.tiles[x][y].put_animal(new_born)
+            # print(new_born.genome.get_genes())
         self.new_animals.clear()
 
     def _process_plants_eating_and_growing(self):
