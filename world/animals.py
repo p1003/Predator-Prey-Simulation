@@ -82,7 +82,6 @@ class Animal:
             energy_int += 1
         self.energy = max(0, self.energy - energy_int)
 
-        # TODO: check toroid map
         if direction == Directions.LEFT:
             self.x = (self.x + gridxsize - 1) % gridxsize
         if direction == Directions.RIGHT:
