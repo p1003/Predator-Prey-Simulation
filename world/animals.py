@@ -77,8 +77,6 @@ class Animal:
                 Animal.n_predator -= 1
 
     def move(self, direction, gridxsize, gridysize):
-        # if(self.id == 1):
-        #     print(self.energy)
         energy_int = int(self.energy_consumption)
         if random() > self.energy_consumption % 1 and self.energy_consumption != 1.:
             energy_int += 1

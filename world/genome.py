@@ -54,7 +54,7 @@ class Genome:
         if is_additive:
             return max(gene + round(uniform(-config.mutation_ratio, config.mutation_ratio), 3), 0.)
         return gene * (1. + round(uniform(-config.mutation_ratio, config.mutation_ratio), 3))
-
+    
     @staticmethod
     def combined_genome(first: Genome, second: Genome, config: Config) -> Genome:
         if not config.simulate_genomes:
