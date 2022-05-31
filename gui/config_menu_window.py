@@ -92,8 +92,7 @@ class ConfigMenuWindow:
 
         # map size
         label_map_size = ttk.Label(config_frame, text='Map size: ')
-        # TODO: only squares?
-        self.var_map_size = tk.IntVar(config_frame, self.config.grid_xsize)
+        self.var_map_size = tk.IntVar(config_frame, self.config.grid_size)
         scale_map_size = tk.Scale(config_frame, from_=10, to=200, orient='horizontal', variable=self.var_map_size,
                                   tickinterval=190)
 
@@ -162,9 +161,7 @@ class ConfigMenuWindow:
         self.row += 1
 
     def _config_update(self):
-        # TODO: square?
-        self.config.grid_xsize = self.var_map_size.get()
-        self.config.grid_ysize = self.var_map_size.get()
+        self.config.grid_size = self.var_map_size.get()
         self.config.n_predator = self.var_predator_count.get()
         self.config.n_prey = self.var_prey_count.get()
         self.config.base_animal_energy = self.var_base_energy.get()
@@ -180,9 +177,8 @@ class ConfigMenuWindow:
         self.root.quit()
         self.root.destroy()
 
-    # TODO: take from some JSON?
     def _button_reset_command(self):
-        self.var_map_size.set(self.config.grid_xsize)
+        self.var_map_size.set(self.config.grid_size)
         self.var_predator_count.set(self.config.n_predator)
         self.var_prey_count.set(self.config.n_prey)
         self.var_base_energy.set(self.config.base_animal_energy)
@@ -193,4 +189,4 @@ class ConfigMenuWindow:
         self.config_genome_frame.reset()
 
     def _button_save(self):
-        self._config_update()  # TODO: save to some JSON?
+        self._config_update()
