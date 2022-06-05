@@ -56,12 +56,14 @@ class Animal:
                     ))
 
         elif self.species == Species.PREY and other.species == Species.PREDATOR:
-            self.die()
-            other.energy += self.energy
+            if not other.check_if_energy_over_max():
+                self.die()
+                other.energy += int(self.energy*self.config.food_efficiency_ratio)
 
         elif self.species == Species.PREDATOR and other.species == Species.PREY:
-            other.die()
-            self.energy += other.energy
+            if not self.check_if_energy_over_max():
+                other.die()
+                self.energy += int(other.energy*self.config.food_efficiency_ratio)
 
     def die(self):
         if not self.isDead:
@@ -72,6 +74,8 @@ class Animal:
                 Animal.n_predator -= 1
 
     def move(self, direction, gridxsize, gridysize):
+        # if(self.id == 1):
+        #     print(self.energy)
         energy_int = int(self.energy_consumption)
         if random() > self.energy_consumption % 1 and self.energy_consumption != 1.:
             energy_int += 1
@@ -167,6 +171,9 @@ class Animal:
         directions_weights = np.array(directions_weights)
         directions_weights /= directions_weights.sum()
         return Directions(np.random.choice(a=np.array([0, 1, 2, 3, 4]), size=1, p=directions_weights))
+
+    def check_if_energy_over_max(self):
+        return self.energy > int(self.genome.get_genes()[2])
 
     def get_position(self):
         return self.x, self.y

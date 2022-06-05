@@ -149,7 +149,6 @@ class Map:
             x, y = new_born.get_position()
             self.animals.append(new_born)
             self.tiles[x][y].put_animal(new_born)
-            # print(new_born.genome.get_genes())
         self.new_animals.clear()
 
     def _process_plants_eating_and_growing(self):
@@ -160,27 +159,27 @@ class Map:
         for animal in self.animals:
             if not interacted[animal.id]:
                 x, y = animal.get_position()
-                prey_on_tile_count = 0
+                eaters_ids = []
                 for a in self.tiles[x][y].animals:
                     interacted[a.id] = True
-                    if a.species == Species.PREY:
-                        prey_on_tile_count += 1
+                    if a.species == Species.PREY and not a.check_if_energy_over_max():
+                        eaters_ids.append(a.id)
                 current_plant_supply = self.tiles[x][y].plant_supply // 1
-                if current_plant_supply > 1 and prey_on_tile_count > 0:
+                if current_plant_supply > 1 and len(eaters_ids) > 0:
 
-                    if current_plant_supply <= prey_on_tile_count:
+                    if current_plant_supply <= len(eaters_ids):
                         supply = 1
                         i = 0
                         for a in self.tiles[x][y].animals:
-                            if a.species == Species.PREY:
+                            if a.id in eaters_ids:
                                 a.energy += supply
                                 i += 1
                             if i >= current_plant_supply:
                                 break
 
                     else:
-                        general_supply = current_plant_supply / prey_on_tile_count
-                        supply = general_supply + current_plant_supply % prey_on_tile_count
+                        general_supply = current_plant_supply / len(eaters_ids)
+                        supply = general_supply + current_plant_supply % len(eaters_ids)
                         for a in self.tiles[x][y].animals:
                             if a.species == Species.PREY:
                                 a.energy += supply
