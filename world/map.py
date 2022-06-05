@@ -149,7 +149,6 @@ class Map:
             x, y = new_born.get_position()
             self.animals.append(new_born)
             self.tiles[x][y].put_animal(new_born)
-            # print(new_born.genome.get_genes())
         self.new_animals.clear()
 
     def _process_plants_eating_and_growing(self):
