@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Type
 
-from config import Config
+from config import Config, PARAMETER_NAMES
 from gui.utils import center_window
 from world import Map
 from world.genome import GENE_NAMES
@@ -100,33 +100,15 @@ class ConfigMenuWindow:
         scale_map_size.grid(row=self.row, column=1, padx=5)
         self.row += 1
 
-        # predator count
-        self.var_predator_count = tk.IntVar(value=self.config.n_predator)
-        self._add_row_spinbox(config_frame, 'Predator count: ', self.var_predator_count)
-
-        # prey count
-        self.var_prey_count = tk.IntVar(value=self.config.n_prey)
-        self._add_row_spinbox(config_frame, 'Prey count: ', self.var_prey_count)
-
-        # base animal energy
-        self.var_base_energy = tk.IntVar(value=self.config.base_animal_energy)
-        self._add_row_spinbox(config_frame, 'Base animal energy: ', self.var_base_energy)
-
-        # plant regeneration ratio
-        self.var_plant_regen = tk.DoubleVar(value=self.config.plant_regeneration_ratio)
-        self._add_row_spinbox(config_frame, 'Grass regeneration ratio: ', self.var_plant_regen, inc=0.1)
-
-        # max grass
-        self.var_max_grass = tk.IntVar(value=self.config.max_plant_supply)
-        self._add_row_spinbox(config_frame, 'Maximum grass units: ', self.var_max_grass)
-
-        # min reproduction energy
-        self.var_min_reproduction_energy = tk.IntVar(value=self.config.minimal_reproduction_energy)
-        self._add_row_spinbox(config_frame, 'Minimum reproduction energy: ', self.var_min_reproduction_energy)
-
-        # food efficiency ratio
-        self.var_food_efficiency_ratio = tk.DoubleVar(value=self.config.food_efficiency_ratio)
-        self._add_row_spinbox(config_frame, 'Food efficiency ratio: ', self.var_food_efficiency_ratio, inc=0.1)
+        # regular parameters
+        self.parameter_variables = []
+        for name, value in zip(PARAMETER_NAMES, self.config.get_regular_parameters()):
+            if type(value) is int:
+                var, inc = tk.IntVar(value=value), 1
+            else:
+                var, inc = tk.DoubleVar(value=value), 0.1
+            self._add_row_spinbox(config_frame, name + ': ', var, inc=inc)
+            self.parameter_variables.append(var)
 
         config_frame.pack()
 
@@ -166,32 +148,18 @@ class ConfigMenuWindow:
 
     def _config_update(self):
         self.config.grid_size = self.var_map_size.get()
-        self.config.n_predator = self.var_predator_count.get()
-        self.config.n_prey = self.var_prey_count.get()
-        self.config.base_animal_energy = self.var_base_energy.get()
-        self.config.plant_regeneration_ratio = self.var_plant_regen.get()
-        self.config.max_plant_supply = self.var_max_grass.get()
-        self.config.minimal_reproduction_energy = self.var_min_reproduction_energy.get()
-        self.config.food_efficiency_ratio = self.var_food_efficiency_ratio.get()
-
+        self.config.set_regular_parameters(*[var.get() for var in self.parameter_variables])
         self.config_genome_frame.config_update()
 
     def _button_run_command(self):
         self._config_update()
-
         self.root.quit()
         self.root.destroy()
 
     def _button_reset_command(self):
         self.var_map_size.set(self.config.grid_size)
-        self.var_predator_count.set(self.config.n_predator)
-        self.var_prey_count.set(self.config.n_prey)
-        self.var_base_energy.set(self.config.base_animal_energy)
-        self.var_plant_regen.set(self.config.plant_regeneration_ratio)
-        self.var_max_grass.set(self.config.max_plant_supply)
-        self.var_min_reproduction_energy.set(self.config.minimal_reproduction_energy)
-        self.var_food_efficiency_ratio.set(self.config.food_efficiency_ratio)
-
+        for var, value in zip(self.parameter_variables, self.config.get_regular_parameters()):
+            var.set(value)
         self.config_genome_frame.reset()
 
     def _button_save(self):
