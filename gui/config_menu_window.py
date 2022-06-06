@@ -124,6 +124,10 @@ class ConfigMenuWindow:
         self.var_min_reproduction_energy = tk.IntVar(value=self.config.minimal_reproduction_energy)
         self._add_row_spinbox(config_frame, 'Minimum reproduction energy: ', self.var_min_reproduction_energy)
 
+        # food efficiency ratio
+        self.var_food_efficiency_ratio = tk.DoubleVar(value=self.config.food_efficiency_ratio)
+        self._add_row_spinbox(config_frame, 'Food efficiency ratio: ', self.var_food_efficiency_ratio, inc=0.1)
+
         config_frame.pack()
 
         # config genome frame
@@ -168,6 +172,7 @@ class ConfigMenuWindow:
         self.config.plant_regeneration_ratio = self.var_plant_regen.get()
         self.config.max_plant_supply = self.var_max_grass.get()
         self.config.minimal_reproduction_energy = self.var_min_reproduction_energy.get()
+        self.config.food_efficiency_ratio = self.var_food_efficiency_ratio.get()
 
         self.config_genome_frame.config_update()
 
@@ -185,6 +190,7 @@ class ConfigMenuWindow:
         self.var_plant_regen.set(self.config.plant_regeneration_ratio)
         self.var_max_grass.set(self.config.max_plant_supply)
         self.var_min_reproduction_energy.set(self.config.minimal_reproduction_energy)
+        self.var_food_efficiency_ratio.set(self.config.food_efficiency_ratio)
 
         self.config_genome_frame.reset()
 

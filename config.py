@@ -11,6 +11,7 @@ class Config:
         self.plant_regeneration_ratio = 0.2
         self.max_plant_supply = 15
         self.minimal_reproduction_energy = 30
+        self.food_efficiency_ratio = 0.5
 
         self.simulate_genomes = True
         self.viewrange_range = (0, 5)
@@ -18,8 +19,6 @@ class Config:
         self.max_animal_energy_range = (100, 200)
         self.fear_of_predator_ratio_range = (0.5, 1.5)
         self.eating_over_mating_ratio_range = (0.5, 1.5)
-
-        self.food_efficiency_ratio = 0.5
 
         self.mutation_ratio = 0.05
 
