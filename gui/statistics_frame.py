@@ -51,7 +51,7 @@ class PopulationGraphFrame:
 
         self.show_variables = {}
         for text in ['Prey', 'Predators', 'Grass', 'Markers']:
-            self.show_variables[text] = tk.BooleanVar(value=True)
+            self.show_variables[text] = tk.BooleanVar(value=text in ['Prey', 'Predators'])
             button = ttk.Checkbutton(options_frame, text=text, variable=self.show_variables[text], command=self._redraw)
             button.pack(side='left')
 
