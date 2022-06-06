@@ -39,14 +39,15 @@ class GenomeConfigMenuFrame:
         # gene ranges
         ranges_frame = ttk.Frame(frame)
         self.row = 0
-
-        # viewrange
-        self.var_viewrange = RangeVar(tk.IntVar, self.config.viewrange_range)
-        self._add_row_range_spinboxes(ranges_frame, GENE_NAMES[0] + ': ', self.var_viewrange)
-
-        # energy consumption ratio
-        self.var_energy_consumption = RangeVar(tk.DoubleVar, self.config.energy_consumption_ratio_range)
-        self._add_row_range_spinboxes(ranges_frame, GENE_NAMES[1] + ': ', self.var_energy_consumption, inc=0.1)
+        self.gene_variables = []
+        for gene_name, gene_range in zip(GENE_NAMES, self.config.get_gene_ranges()):
+            if type(gene_range[0]) is int:
+                var_type, inc = tk.IntVar, 1
+            else:
+                var_type, inc = tk.DoubleVar, 0.1
+            var = RangeVar(var_type, gene_range)
+            self._add_row_range_spinboxes(ranges_frame, gene_name + ': ', var, inc=inc)
+            self.gene_variables.append(var)
 
         ranges_frame.pack()
 
@@ -54,21 +55,18 @@ class GenomeConfigMenuFrame:
 
     def config_update(self):
         self.config.simulate_genomes = self.var_simulate_genomes.get()
-
-        self.config.viewrange_range = self.var_viewrange.get()
-        self.config.energy_consumption_ratio_range = self.var_energy_consumption.get()
+        self.config.set_gene_ranges(*[var.get() for var in self.gene_variables])
 
     def reset(self):
         self.var_simulate_genomes.set(self.config.simulate_genomes)
-
-        self.var_viewrange.set(self.config.viewrange_range)
-        self.var_energy_consumption.set(self.config.energy_consumption_ratio_range)
+        for var, gene_range in zip(self.gene_variables, self.config.get_gene_ranges()):
+            var.set(gene_range)
 
     def _add_row_range_spinboxes(self, frame, text, range_var, from_=0, to=99999999, inc=1.):
         label = ttk.Label(frame, text=text)
-        spinbox_low = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.low, width=3, increment=inc)
+        spinbox_low = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.low, width=4, increment=inc)
         label_range_sign = ttk.Label(frame, text='-')
-        spinbox_high = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.high, width=3, increment=inc)
+        spinbox_high = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.high, width=4, increment=inc)
 
         label.grid(sticky='w', row=self.row, column=0, pady=5)
         spinbox_low.grid(row=self.row, column=1, padx=2)
