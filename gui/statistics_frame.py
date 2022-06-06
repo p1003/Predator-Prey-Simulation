@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from gui.main_window import MainWindow
 
 HISTOGRAM_N_BINS = 20
+ENERGY_HISTOGRAM_STEP = 50
 
 
 class PopulationGraphFrame:
@@ -152,8 +153,12 @@ class EnergiesHistogramsFrame:
 
         self.fig.suptitle('Energies')
 
-        self.prey_plot.hist(self.prey_energies, bins=HISTOGRAM_N_BINS)
-        self.predator_plot.hist(self.predator_energies, bins=HISTOGRAM_N_BINS)
+        max_energy = max(max(self.prey_energies) if self.prey_energies else 200,
+                         max(self.predator_energies) if self.predator_energies else 200)
+        xmax = max_energy + ENERGY_HISTOGRAM_STEP - max_energy % ENERGY_HISTOGRAM_STEP
+
+        self.prey_plot.hist(self.prey_energies, bins=HISTOGRAM_N_BINS, range=(0, xmax))
+        self.predator_plot.hist(self.predator_energies, bins=HISTOGRAM_N_BINS, range=(0, xmax))
 
         self.canvas.draw()
 
