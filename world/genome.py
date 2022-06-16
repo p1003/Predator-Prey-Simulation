@@ -21,7 +21,6 @@ class Genome:
                  energy_consumption_ratio: float = 1.,
                  max_animal_energy: int = 150,
                  fear_of_predator_ratio: float = 1.,
-<<<<<<< HEAD
                  eating_over_mating_ratio: float = 1.,
                  config: Config = None
                  ):
@@ -38,16 +37,6 @@ class Genome:
             self.fear_of_predator_ratio = fear_of_predator_ratio
             self.eating_over_mating_ratio = eating_over_mating_ratio
 
-=======
-                 eating_over_mating_ratio: float = 1.
-                 ):
-        self.viewrange = viewrange
-        self.energy_consumption_ratio = energy_consumption_ratio
-        self.max_animal_energy = max_animal_energy
-        self.fear_of_predator_ratio = fear_of_predator_ratio
-        self.eating_over_mating_ratio = eating_over_mating_ratio
-    
->>>>>>> 056348f (genes)
     def calculate_energy_consumption(self) -> float:
         return (self.viewrange) * self.energy_consumption_ratio
 
@@ -73,20 +62,13 @@ class Genome:
         first_genes = first.get_genes()
         second_genes = second.get_genes()
 
-<<<<<<< HEAD
         # below value is ugly cheat: genomes below 3rd index mutate additively, equal or higher multiplicatively
-=======
->>>>>>> 056348f (genes)
         arbitral_var= 3
 
         new_genes = []
         for i in range(len(first_genes)):
             new_genes.append(Genome._mutate_gene(gene=(first_genes[i] + second_genes[i])/2, config=config, is_additive=i<arbitral_var))
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 056348f (genes)
         gene_ranges = config.get_gene_ranges()
 
         return Genome(
