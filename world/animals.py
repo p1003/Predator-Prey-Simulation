@@ -76,20 +76,20 @@ class Animal:
             else:
                 Animal.n_predator -= 1
 
-    def move(self, direction, gridxsize, gridysize):
+    def move(self, direction, gridsize):
         energy_int = int(self.energy_consumption)
         if random() > self.energy_consumption % 1 and self.energy_consumption != 1.:
             energy_int += 1
         self.energy = max(0, self.energy - energy_int)
 
         if direction == Directions.LEFT:
-            self.x = (self.x + gridxsize - 1) % gridxsize
+            self.x = (self.x + gridsize - 1) % gridsize
         if direction == Directions.RIGHT:
-            self.x = (self.x + gridxsize + 1) % gridxsize
+            self.x = (self.x + gridsize + 1) % gridsize
         if direction == Directions.UP:
-            self.y = (self.y + gridysize - 1) % gridysize
+            self.y = (self.y + gridsize - 1) % gridsize
         if direction == Directions.DOWN:
-            self.y = (self.y + gridysize + 1) % gridysize
+            self.y = (self.y + gridsize + 1) % gridsize
         if direction == Directions.STAY:
             pass
 
