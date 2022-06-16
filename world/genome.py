@@ -13,7 +13,6 @@ GENE_NAMES = [
 ]
 N_GENES = len(GENE_NAMES)
 
-# TODO: add cost (energy)
 class Genome:
     """"""
 
@@ -22,13 +21,21 @@ class Genome:
                  energy_consumption_ratio: float = 1.,
                  max_animal_energy: int = 150,
                  fear_of_predator_ratio: float = 1.,
-                 eating_over_mating_ratio: float = 1.
+                 eating_over_mating_ratio: float = 1.,
+                 config: Config = None
                  ):
-        self.viewrange = viewrange
-        self.energy_consumption_ratio = energy_consumption_ratio
-        self.max_animal_energy = max_animal_energy
-        self.fear_of_predator_ratio = fear_of_predator_ratio
-        self.eating_over_mating_ratio = eating_over_mating_ratio
+        if config is not None:
+            self.viewrange = (config.viewrange_range[0] + config.viewrange_range[1]/2)
+            self.energy_consumption_ratio = (config.energy_consumption_ratio_range[0] + config.energy_consumption_ratio_range[1]/2)
+            self.max_animal_energy = (config.max_animal_energy[0] + config.max_animal_energy[1]/2)
+            self.fear_of_predator_ratio = (config.fear_of_predator_ratio[0] + config.fear_of_predator_ratio[1]/2)
+            self.eating_over_mating_ratio = (config.eating_over_mating_ratio[0] + config.eating_over_mating_ratio[1]/2)
+        else:
+            self.viewrange = viewrange
+            self.energy_consumption_ratio = energy_consumption_ratio
+            self.max_animal_energy = max_animal_energy
+            self.fear_of_predator_ratio = fear_of_predator_ratio
+            self.eating_over_mating_ratio = eating_over_mating_ratio
     
     def calculate_energy_consumption(self) -> float:
         return (self.viewrange) * self.energy_consumption_ratio
@@ -50,9 +57,12 @@ class Genome:
     
     @staticmethod
     def combined_genome(first: Genome, second: Genome, config: Config) -> Genome:
+        if not config.simulate_genomes:
+            return first.get_genes()
         first_genes = first.get_genes()
         second_genes = second.get_genes()
 
+        # below value is ugly cheat: genomes below 3rd index mutate additively, equal or higher multiplicatively
         arbitral_var= 3
 
         new_genes = []
