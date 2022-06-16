@@ -54,7 +54,7 @@ class Genome:
         if is_additive:
             return max(gene + round(uniform(-config.mutation_ratio, config.mutation_ratio), 3), 0.)
         return gene * (1. + round(uniform(-config.mutation_ratio, config.mutation_ratio), 3))
-
+    
     @staticmethod
     def combined_genome(first: Genome, second: Genome, config: Config) -> Genome:
         if not config.simulate_genomes:
@@ -68,7 +68,7 @@ class Genome:
         new_genes = []
         for i in range(len(first_genes)):
             new_genes.append(Genome._mutate_gene(gene=(first_genes[i] + second_genes[i])/2, config=config, is_additive=i<arbitral_var))
-
+        
         gene_ranges = config.get_gene_ranges()
 
         return Genome(
