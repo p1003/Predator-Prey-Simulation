@@ -50,8 +50,6 @@ class MapTile:
         return prey_n, predator_n
 
 
-
-# TODO: bug fix - method die sometimes called multiple times for a single animal
 class Map:
     """
     Class holding all entities on it

@@ -13,12 +13,18 @@ class RangeVar:
         self.low = var_class(value=default_range[0])
         self.high = var_class(value=default_range[1])
 
-    def get(self):
+    def get_range(self):
+        self._check_correctness()
         return self.low.get(), self.high.get()
 
     def set(self, range_: tuple[float, float]):
         self.low.set(range_[0])
         self.high.set(range_[1])
+        self._check_correctness()
+
+    def _check_correctness(self):
+        if self.low.get() > self.high.get():
+            self.high.set(self.low.get())
 
 
 class GenomeConfigMenuFrame:
