@@ -246,8 +246,9 @@ class GeneHistogramsFrame:
 
         self.fig.suptitle(f'{self.gene_name}')
 
-        self.prey_plot.hist(self.prey_genes, bins=HISTOGRAM_N_BINS, range=self.gene_range)
-        self.predator_plot.hist(self.predator_genes, bins=HISTOGRAM_N_BINS, range=self.gene_range)
+        self.prey_plot.hist(self.prey_genes, bins=HISTOGRAM_N_BINS, range=(self.gene_range[1], self.gene_range[2]))
+        self.predator_plot.hist(self.predator_genes, bins=HISTOGRAM_N_BINS,
+                                range=(self.gene_range[1], self.gene_range[2]))
 
         self.canvas.draw()
 

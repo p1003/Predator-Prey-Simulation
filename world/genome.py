@@ -25,11 +25,11 @@ class Genome:
                  config: Config = None
                  ):
         if config is not None:
-            self.viewrange = (config.viewrange_range[0] + config.viewrange_range[1]/2)
-            self.energy_consumption_ratio = (config.energy_consumption_ratio_range[0] + config.energy_consumption_ratio_range[1]/2)
-            self.max_animal_energy = (config.max_animal_energy_range[0] + config.max_animal_energy_range[1]/2)
-            self.fear_of_predator_ratio = (config.fear_of_predator_ratio_range[0] + config.fear_of_predator_ratio_range[1]/2)
-            self.eating_over_mating_ratio = (config.eating_over_mating_ratio_range[0] + config.eating_over_mating_ratio_range[1]/2)
+            self.viewrange = config.viewrange_range[0]
+            self.energy_consumption_ratio = config.energy_consumption_ratio_range[0]
+            self.max_animal_energy = config.max_animal_energy_range[0]
+            self.fear_of_predator_ratio = config.fear_of_predator_ratio_range[0]
+            self.eating_over_mating_ratio = config.eating_over_mating_ratio_range[0]
         else:
             self.viewrange = viewrange
             self.energy_consumption_ratio = energy_consumption_ratio
@@ -72,9 +72,9 @@ class Genome:
         gene_ranges = config.get_gene_ranges()
 
         return Genome(
-            viewrange=max(gene_ranges[0][0], min(gene_ranges[0][1], new_genes[0])),
-            energy_consumption_ratio=max(gene_ranges[1][0], min(gene_ranges[1][1], new_genes[1])),
-            max_animal_energy=max(gene_ranges[2][0], min(gene_ranges[2][1], new_genes[2])),
-            fear_of_predator_ratio=max(gene_ranges[3][0], min(gene_ranges[3][1], new_genes[3])),
-            eating_over_mating_ratio=max(gene_ranges[4][0], min(gene_ranges[4][1], new_genes[4])),
+            viewrange=max(gene_ranges[0][1], min(gene_ranges[0][2], new_genes[0])),
+            energy_consumption_ratio=max(gene_ranges[1][1], min(gene_ranges[1][2], new_genes[1])),
+            max_animal_energy=max(gene_ranges[2][1], min(gene_ranges[2][2], new_genes[2])),
+            fear_of_predator_ratio=max(gene_ranges[3][1], min(gene_ranges[3][2], new_genes[3])),
+            eating_over_mating_ratio=max(gene_ranges[4][1], min(gene_ranges[4][2], new_genes[4])),
         )
