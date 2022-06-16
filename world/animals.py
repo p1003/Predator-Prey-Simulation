@@ -20,7 +20,7 @@ class Animal:
     n_predator = 0
 
     def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map, config: Config, genome: Genome = None):
-        if not Genome:
+        if genome is None:
             self.genome = Genome(config=config)
         else:
             self.genome = genome
@@ -97,8 +97,8 @@ class Animal:
             self.die()  # R.I.P.
 
     def _calc_tile_choice_value(self, current_tile: MapTile) -> float:
+        result = 0.0
         if not current_tile.is_empty():
-            result = 0.0
             prey_n, predator_n = current_tile.get_animal_counts()
             if self.species == Species.PREY:
                 result -= predator_n * self.genome.fear_of_predator_ratio
@@ -107,7 +107,7 @@ class Animal:
             else:
                 result += predator_n / self.genome.eating_over_mating_ratio
                 result += prey_n * self.genome.eating_over_mating_ratio
-            return result
+        return result
 
     def choose_direction(self) -> Directions:
         if not self.config.simulate_genomes:

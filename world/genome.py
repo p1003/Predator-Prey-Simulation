@@ -24,7 +24,7 @@ class Genome:
                  eating_over_mating_ratio: float = 1.,
                  config: Config = None
                  ):
-        if config:
+        if config is not None:
             self.viewrange = (config.viewrange_range[0] + config.viewrange_range[1]/2)
             self.energy_consumption_ratio = (config.energy_consumption_ratio_range[0] + config.energy_consumption_ratio_range[1]/2)
             self.max_animal_energy = (config.max_animal_energy[0] + config.max_animal_energy[1]/2)
