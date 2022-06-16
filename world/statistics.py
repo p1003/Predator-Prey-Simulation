@@ -51,13 +51,3 @@ class Statistics:
         predator_genes = [np.array(genes) for genes in predator_genes]
 
         return prey_genes, predator_genes
-
-    def get_energies(self):
-        prey_energies, predator_energies = [], []
-        for animal in self.world_map.animals:
-            if animal.species == Species.PREY:
-                prey_energies.append(animal.energy)
-            else:
-                predator_energies.append(animal.energy)
-
-        return prey_energies, predator_energies

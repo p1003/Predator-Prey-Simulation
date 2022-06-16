@@ -73,7 +73,7 @@ class Map:
         self.new_animals = []
         self.animal_ID = 0
 
-        self.tiles = [[MapTile() for _ in range(self.config.grid_size)] for _ in range(self.config.grid_size)]
+        self.tiles = [[MapTile() for _ in range(self.config.grid_ysize)] for _ in range(self.config.grid_xsize)]
 
         Animal.reset_counts()
         self._init_species(self.config.n_predator, Species.PREDATOR)
@@ -103,8 +103,8 @@ class Map:
     def _init_species(self, n, species):
         for _ in range(n):
             while True:
-                x = randrange(0, self.config.grid_size)
-                y = randrange(0, self.config.grid_size)
+                x = randrange(0, self.config.grid_xsize)
+                y = randrange(0, self.config.grid_ysize)
                 if self.tiles[x][y].is_empty():
                     break
             self.add_animal(x, y, self.config.base_animal_energy, species)
@@ -124,7 +124,7 @@ class Map:
         for a in self.animals:
             old_x, old_y = a.get_position()
             direction = a.choose_direction()
-            a.move(direction=direction, gridsize=self.config.grid_size)
+            a.move(direction=direction, gridxsize=self.config.grid_xsize, gridysize=self.config.grid_ysize)
             new_x, new_y = a.get_position()
             if not (new_x == old_x and new_y == old_y):
                 self.tiles[old_x][old_y].remove_animal(a)
@@ -197,8 +197,8 @@ class Map:
         for i in range(x - radius, x + radius + 1):
             row: list[MapTile] = []
             for j in range(y - radius, y + radius + 1):
-                x_size = self.config.grid_size
-                y_size = self.config.grid_size
+                x_size = self.config.grid_xsize
+                y_size = self.config.grid_ysize
                 row.append(self.tiles[(i + x_size) % x_size][(j + y_size) % y_size])
             result_tiles.append(row)
         return result_tiles
