@@ -19,7 +19,11 @@ class Animal:
     n_prey = 0
     n_predator = 0
 
-    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map, config: Config, genome: Genome = Genome()):
+    def __init__(self, x: int, y: int, init_energy: int, species: Species, id: int, map: Map, config: Config, genome: Genome = None):
+        if not Genome:
+            self.genome = Genome(config=config)
+        else:
+            self.genome = genome
         self.x = x
         self.y = y
         self.energy = init_energy
@@ -28,7 +32,6 @@ class Animal:
         self.isDead: bool = False
         self.map = map
         self.config = config
-        self.genome = genome
         self.energy_consumption = self.genome.calculate_energy_consumption()
 
         if self.species == Species.PREY:
@@ -74,8 +77,6 @@ class Animal:
                 Animal.n_predator -= 1
 
     def move(self, direction, gridxsize, gridysize):
-        # if(self.id == 1):
-        #     print(self.energy)
         energy_int = int(self.energy_consumption)
         if random() > self.energy_consumption % 1 and self.energy_consumption != 1.:
             energy_int += 1
@@ -95,6 +96,19 @@ class Animal:
         if self.energy <= 0:
             self.die()  # R.I.P.
 
+    def _calc_tile_choice_value(self, current_tile: MapTile) -> float:
+        if not current_tile.is_empty():
+            result = 0.0
+            prey_n, predator_n = current_tile.get_animal_counts()
+            if self.species == Species.PREY:
+                result -= predator_n * self.genome.fear_of_predator_ratio
+                result += prey_n / self.genome.eating_over_mating_ratio
+                result += current_tile.get_n_plants() * self.genome.eating_over_mating_ratio
+            else:
+                result += predator_n / self.genome.eating_over_mating_ratio
+                result += prey_n * self.genome.eating_over_mating_ratio
+            return result
+
     def choose_direction(self) -> Directions:
         if not self.config.simulate_genomes:
             return choice(list(Directions))
@@ -107,28 +121,14 @@ class Animal:
 
         n_size = current_viewrange*2 + 1
 
-        choice_map = np.zeros((n_size, n_size),dtype=np.float32)
-
-        for i in range(n_size):
-            for j in range(n_size):
-                current_tile = neighbourhood[i][j]
-                if not current_tile.is_empty():
-                    prey_n, predator_n = current_tile.get_animal_counts()
-                    if self.species == Species.PREY:
-                        choice_map[i][j] -= predator_n * self.genome.fear_of_predator_ratio
-                        choice_map[i][j] += prey_n / self.genome.eating_over_mating_ratio
-                        choice_map[i][j] += current_tile.get_n_plants() * self.genome.eating_over_mating_ratio
-                    else:
-                        choice_map[i][j] += predator_n / self.genome.eating_over_mating_ratio
-                        choice_map[i][j] += prey_n * self.genome.eating_over_mating_ratio
-
         directions_weights = [1., 1., 1., 1., 1.] # []
         for i in range(n_size):
             for j in range(n_size):
+                tile_choice_value = self._calc_tile_choice_value(current_tile=neighbourhood[i][j])
                 x_dist = abs(i-current_viewrange)
                 y_dist = abs(j-current_viewrange)
                 if x_dist == 0 and y_dist == 0:
-                    directions_weights[4] = choice_map[i][j]
+                    directions_weights[4] = tile_choice_value
                     
                 else:
                     x_direction: Directions
@@ -151,8 +151,8 @@ class Animal:
                     else:
                         y_direction = Directions.STAY
                     
-                    directions_weights[x_direction.value] += choice_map[i][j] * x_weight * distance_weight
-                    directions_weights[y_direction.value] += choice_map[i][j] * y_weight * distance_weight
+                    directions_weights[x_direction.value] += tile_choice_value * x_weight * distance_weight
+                    directions_weights[y_direction.value] += tile_choice_value * y_weight * distance_weight
 
         # below lines handles negative values
         for i in range(4):
