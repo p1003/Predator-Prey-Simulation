@@ -13,12 +13,10 @@ from matplotlib.ticker import MaxNLocator
 from gui.simulation_frame import SimulationFrame
 from world import Map
 from world.genome import N_GENES, GENE_NAMES
+from world.statistics import Statistics
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow
-
-HISTOGRAM_N_BINS = 20
-ENERGY_HISTOGRAM_STEP = 50
 
 
 class PopulationGraphFrame:
@@ -34,7 +32,7 @@ class PopulationGraphFrame:
         self.n_predators = []
         self.n_grass = []
 
-        self.fig = Figure(figsize=(4, 2.8))
+        self.fig = Figure(figsize=(4, 3.1))
 
         self.plot = self.fig.add_subplot(111)
         self.plot.set_title('Population graph')
@@ -44,14 +42,14 @@ class PopulationGraphFrame:
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(expand=True, fill='both')
+        self.canvas.get_tk_widget().pack(expand=True, fill='x')
 
         # options frame
         options_frame = ttk.Frame(self.frame, relief='ridge', borderwidth=2)
 
         self.show_variables = {}
         for text in ['Prey', 'Predators', 'Grass', 'Markers']:
-            self.show_variables[text] = tk.BooleanVar(value=text in ['Prey', 'Predators'])
+            self.show_variables[text] = tk.BooleanVar(value=True)
             button = ttk.Checkbutton(options_frame, text=text, variable=self.show_variables[text], command=self._redraw)
             button.pack(side='left')
 
@@ -102,7 +100,7 @@ class PopulationGraphFrame:
 
         self.plot.set_title('Population graph')
         if not is_empty_plot:
-            self.plot.legend(loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.22))
+            self.plot.legend(loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.21))
         self.plot.set_ylim(bottom=0)
 
         self.fig.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
@@ -115,70 +113,15 @@ class PopulationGraphFrame:
         self._redraw()
 
 
-class EnergiesHistogramsFrame:
-    def __init__(self, root, prey_energies: list | np.array = None, predator_energies: list | np.array = None):
-        self.root = root
-
-        self.prey_energies = prey_energies if prey_energies is not None else []
-        self.predator_energies = predator_energies if predator_energies is not None else []
-
-        self.frame = ttk.Frame(root, relief='ridge', borderwidth=2)
-
-        self.fig = Figure(figsize=(5, 1.6))
-
-        self.prey_plot = self.fig.add_subplot(1, 2, 1)
-        self.predator_plot = self.fig.add_subplot(1, 2, 2)
-
-        self.fig.suptitle('Energy')
-        self.fig.tight_layout()
-
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(expand=True, fill='both')
-
-    def pack(self, *args, **kwargs):
-        self.frame.pack(*args, **kwargs)
-        self._redraw()
-
-    def update(self, prey_energies: np.array, predator_energies: np.array):
-        self.prey_energies = prey_energies
-        self.predator_energies = predator_energies
-        self._redraw()
-
-    def _redraw(self):
-        self.prey_plot.clear()
-        self.prey_plot.set_title(f'Prey')
-        self.predator_plot.clear()
-        self.predator_plot.set_title(f'Predators')
-
-        self.fig.suptitle('Energies')
-
-        max_energy = max(max(self.prey_energies) if self.prey_energies else 200,
-                         max(self.predator_energies) if self.predator_energies else 200)
-        xmax = max_energy + ENERGY_HISTOGRAM_STEP - max_energy % ENERGY_HISTOGRAM_STEP
-
-        self.prey_plot.hist(self.prey_energies, bins=HISTOGRAM_N_BINS, range=(0, xmax))
-        self.predator_plot.hist(self.predator_energies, bins=HISTOGRAM_N_BINS, range=(0, xmax))
-
-        self.canvas.draw()
-
-
 class PopulationStatisticsFrame:
     def __init__(self, root, world_map: Map, statistics_frame: StatisticsFrame):
         self.statistics_frame = statistics_frame
-
-        self.statistics = world_map.statistics
 
         self.frame = ttk.Frame(root, relief='groove', borderwidth=3)
 
         # population graph
         self.population_graph_frame = PopulationGraphFrame(self.frame, world_map)
         self.population_graph_frame.pack(expand=False, fill='x')
-
-        # energies histogram
-        self.prey_energies, self.predator_energies = self.statistics.get_energies()
-        self.energies_histograms = EnergiesHistogramsFrame(self.frame)
-        self.energies_histograms.pack(expand=False, fill='x')
 
         # gene histograms button
         self.button_gene_histograms = ttk.Button(self.frame, text='Show genome histograms',
@@ -189,13 +132,11 @@ class PopulationStatisticsFrame:
         self.frame.pack(*args, **kwargs)
         self._redraw()
 
-    def update(self, refresh_complex=True):
-        self._redraw(refresh_complex)
+    def update(self):
+        self._redraw()
 
-    def _redraw(self, refresh_complex=True):
+    def _redraw(self):
         self.population_graph_frame.update()
-        if refresh_complex:
-            self.energies_histograms.update(*self.statistics.get_energies())
 
     def _button_gene_histograms_command(self):
         self.statistics_frame.negate_gene_histograms()
@@ -206,9 +147,10 @@ class PopulationStatisticsFrame:
 
 
 class GeneHistogramsFrame:
-    def __init__(self, root, gene_name: str, gene_range: tuple[float, float], prey_genes: list | np.array = None,
-                 predator_genes: list | np.array = None):
+    def __init__(self, root, statistics: Statistics, gene_name: str, gene_range: tuple[float, float],
+                 prey_genes: list | np.array = None, predator_genes: list | np.array = None):
         self.root = root
+        self.statistics = statistics
         self.gene_name = gene_name
         self.gene_range = gene_range
 
@@ -246,8 +188,8 @@ class GeneHistogramsFrame:
 
         self.fig.suptitle(f'{self.gene_name}')
 
-        self.prey_plot.hist(self.prey_genes, bins=HISTOGRAM_N_BINS, range=self.gene_range)
-        self.predator_plot.hist(self.predator_genes, bins=HISTOGRAM_N_BINS, range=self.gene_range)
+        self.prey_plot.hist(self.prey_genes, bins=10, range=self.gene_range)
+        self.predator_plot.hist(self.predator_genes, bins=10, range=self.gene_range)
 
         self.canvas.draw()
 
@@ -264,8 +206,8 @@ class GenomeStatisticsFrame:
 
         self.genome_histograms = []
         for i in range(N_GENES):
-            gene_histograms = GeneHistogramsFrame(self.frame, GENE_NAMES[i], self.gene_ranges[i])
-            gene_histograms.pack(expand=False, fill='x')
+            gene_histograms = GeneHistogramsFrame(self.frame, self.statistics, GENE_NAMES[i], self.gene_ranges[i])
+            gene_histograms.pack(expand=True, fill='x')
             self.genome_histograms.append(gene_histograms)
 
     def pack(self, *args, **kwargs):
@@ -303,7 +245,7 @@ class StatisticsFrame:
         frame.pack(side='left', expand=True, fill='both')
 
     def next_turn_update(self, refresh_complex=True):
-        self.population_statistics_frame.update(refresh_complex)
+        self.population_statistics_frame.update()
         if refresh_complex and self.show_gene_histograms:
             self.genome_histograms_frame.update()
 
@@ -314,6 +256,6 @@ class StatisticsFrame:
     def negate_gene_histograms(self):
         self.show_gene_histograms = not self.show_gene_histograms
         if self.show_gene_histograms:
-            self.genome_histograms_frame.pack(side='left', expand=True, fill='both')
+            self.genome_histograms_frame.pack()
         else:
             self.genome_histograms_frame.unpack()
