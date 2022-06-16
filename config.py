@@ -19,11 +19,11 @@ class Config:
         self.food_efficiency_ratio = 0.5
 
         self.simulate_genomes = True
-        self.viewrange_range = (0, 5)
-        self.energy_consumption_ratio_range = (0.5, 1.5)
-        self.max_animal_energy_range = (100, 200)
-        self.fear_of_predator_ratio_range = (0.5, 1.5)
-        self.eating_over_mating_ratio_range = (0.5, 1.5)
+        self.viewrange_range = (1, 0, 5)
+        self.energy_consumption_ratio_range = (1., 0.5, 1.5)
+        self.max_animal_energy_range = (150, 100, 200)
+        self.fear_of_predator_ratio_range = (1., 0.5, 1.5)
+        self.eating_over_mating_ratio_range = (1., 0.5, 1.5)
 
         self.mutation_ratio = 0.05
 

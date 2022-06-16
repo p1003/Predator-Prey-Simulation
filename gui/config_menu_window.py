@@ -9,22 +9,29 @@ from world.genome import GENE_NAMES
 
 
 class RangeVar:
-    def __init__(self, var_class: Type[tk.Variable], default_range: tuple[float, float]):
-        self.low = var_class(value=default_range[0])
-        self.high = var_class(value=default_range[1])
+    def __init__(self, var_class: Type[tk.Variable], default_range: tuple[float, float, float]):
+        self.default = var_class(value=default_range[0])
+        self.low = var_class(value=default_range[1])
+        self.high = var_class(value=default_range[2])
 
-    def get_range(self):
+    def get(self):
         self._check_correctness()
-        return self.low.get(), self.high.get()
+        return self.default.get(), self.low.get(), self.high.get()
 
-    def set(self, range_: tuple[float, float]):
-        self.low.set(range_[0])
-        self.high.set(range_[1])
+    def set(self, range_: tuple[float, float, float]):
+        self.default.set(range_[0])
+        self.low.set(range_[1])
+        self.high.set(range_[2])
         self._check_correctness()
 
     def _check_correctness(self):
         if self.low.get() > self.high.get():
             self.high.set(self.low.get())
+
+        if self.default.get() < self.low.get():
+            self.default.set(self.low.get())
+        elif self.default.get() > self.high.get():
+            self.default.set(self.high.get())
 
 
 class GenomeConfigMenuFrame:
@@ -70,14 +77,21 @@ class GenomeConfigMenuFrame:
 
     def _add_row_range_spinboxes(self, frame, text, range_var, from_=0, to=99999999, inc=1.):
         label = ttk.Label(frame, text=text)
+
+        label_default = ttk.Label(frame, text='Default: ')
+        spinbox_default = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.default, width=4, increment=inc)
+        label_range = ttk.Label(frame, text='Range: ')
         spinbox_low = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.low, width=4, increment=inc)
         label_range_sign = ttk.Label(frame, text='-')
         spinbox_high = ttk.Spinbox(frame, from_=from_, to=to, textvariable=range_var.high, width=4, increment=inc)
 
         label.grid(sticky='w', row=self.row, column=0, pady=5)
-        spinbox_low.grid(row=self.row, column=1, padx=2)
-        label_range_sign.grid(row=self.row, column=2)
-        spinbox_high.grid(row=self.row, column=3, padx=2)
+        label_default.grid(row=self.row, column=1, padx=2)
+        spinbox_default.grid(row=self.row, column=2, padx=2)
+        label_range.grid(row=self.row, column=3, padx=2)
+        spinbox_low.grid(row=self.row, column=4, padx=2)
+        label_range_sign.grid(row=self.row, column=5)
+        spinbox_high.grid(row=self.row, column=6, padx=2)
 
         self.row += 1
 
