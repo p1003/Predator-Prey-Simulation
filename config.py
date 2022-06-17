@@ -1,7 +1,8 @@
 import json
 
 PARAMETER_NAMES = ['Predator count', 'Prey count', 'Base animal energy', 'Grass regeneration ratio',
-                   'Maximum grass units', 'Minimum reproduction energy', 'Food efficiency ratio']
+                   'Maximum grass units', 'Minimum reproduction energy', 'Predator food efficiency ratio',
+                   'Max energy check multiplier', 'Child energy denominator']
 
 
 class Config:
@@ -19,6 +20,8 @@ class Config:
         self.max_plant_supply = 15
         self.minimal_reproduction_energy = 30
         self.food_efficiency_ratio = 0.5
+        self.max_energy_check_mult = 0.7
+        self.child_energy_den = 5
 
         self.simulate_genomes = True
         self.viewrange_range = (1, 0, 5)
@@ -41,10 +44,12 @@ class Config:
 
     def get_regular_parameters(self):
         return [self.n_predator, self.n_prey, self.base_animal_energy, self.plant_regeneration_ratio,
-                self.max_plant_supply, self.minimal_reproduction_energy, self.food_efficiency_ratio]
+                self.max_plant_supply, self.minimal_reproduction_energy, self.food_efficiency_ratio,
+                self.max_energy_check_mult, self.child_energy_den]
 
-    def set_regular_parameters(self, n_predator, n_prey, base_animal_energy, plant_regeneration_ratio,
-                               max_plant_suppy, minimal_reproduction_energy, food_efficiency_ratio):
+    def set_regular_parameters(self, n_predator, n_prey, base_animal_energy, plant_regeneration_ratio, max_plant_suppy,
+                               minimal_reproduction_energy, food_efficiency_ratio, max_energy_check_mult,
+                               child_energy_den):
         self.n_predator = n_predator
         self.n_prey = n_prey
         self.base_animal_energy = base_animal_energy
@@ -52,6 +57,8 @@ class Config:
         self.max_plant_supply = max_plant_suppy
         self.minimal_reproduction_energy = minimal_reproduction_energy
         self.food_efficiency_ratio = food_efficiency_ratio
+        self.max_energy_check_mult = max_energy_check_mult
+        self.child_energy_den = child_energy_den
 
     def get_gene_ranges(self):
         return [self.viewrange_range, self.energy_consumption_ratio_range, self.max_animal_energy_range,
