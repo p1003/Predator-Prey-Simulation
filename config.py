@@ -1,3 +1,5 @@
+import json
+
 PARAMETER_NAMES = ['Predator count', 'Prey count', 'Base animal energy', 'Grass regeneration ratio',
                    'Maximum grass units', 'Minimum reproduction energy', 'Food efficiency ratio']
 
@@ -26,6 +28,16 @@ class Config:
         self.eating_over_mating_ratio_range = (1., 0.5, 1.5)
 
         self.mutation_ratio = 0.05
+
+    def save(self, file_name='config.json'):
+        with open(file_name, 'w') as file:
+            file.write(json.dumps(self, default=lambda o: o.__dict__))
+
+    def load(self, file_name='config.json'):
+        with open(file_name, 'r') as file:
+            file_dict = json.load(file)
+            for attr, value in file_dict.items():
+                setattr(self, attr, value)
 
     def get_regular_parameters(self):
         return [self.n_predator, self.n_prey, self.base_animal_energy, self.plant_regeneration_ratio,
