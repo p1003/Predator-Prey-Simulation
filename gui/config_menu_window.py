@@ -147,6 +147,9 @@ class ConfigMenuWindow:
         button_save = ttk.Button(control_frame, text='Save', command=self._button_save)
         button_save.pack(side='left')
 
+        button_save = ttk.Button(control_frame, text='Load', command=self._button_load)
+        button_save.pack(side='left')
+
         control_frame.pack(side='bottom', padx=2, pady=2)
 
         self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
@@ -184,3 +187,8 @@ class ConfigMenuWindow:
 
     def _button_save(self):
         self._config_update()
+        self.config.save()
+
+    def _button_load(self):
+        self.config.load()
+        self._button_reset_command()
