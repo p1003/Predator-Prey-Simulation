@@ -58,7 +58,7 @@ class Genome:
     @staticmethod
     def combined_genome(first: Genome, second: Genome, config: Config) -> Genome:
         if not config.simulate_genomes:
-            return first.get_genes()
+            return first
         first_genes = first.get_genes()
         second_genes = second.get_genes()
 
