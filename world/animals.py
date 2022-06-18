@@ -62,13 +62,13 @@ class Animal:
             if not other.check_if_energy_over_max():
                 self.die()
                 other.energy += int(self.energy*self.config.food_efficiency_ratio)
-                # other.energy = min(other.energy, self.genome.max_animal_energy)
+                other.energy = min(other.energy, self.genome.max_animal_energy)
 
         elif self.species == Species.PREDATOR and other.species == Species.PREY:
             if not self.check_if_energy_over_max():
                 other.die()
                 self.energy += int(other.energy*self.config.food_efficiency_ratio)
-                # self.energy = min(self.energy, self.genome.max_animal_energy)
+                self.energy = min(self.energy, self.genome.max_animal_energy)
 
     def die(self):
         if not self.isDead:
@@ -116,7 +116,7 @@ class Animal:
             return choice(list(Directions))
         x, y = self.get_position()
         current_viewrange = int(self.genome.viewrange)
-        if random() > self.genome.viewrange % 1 and self.genome.viewrange != 1.:
+        if random() < self.genome.viewrange % 1 and self.genome.viewrange != 1.:
             current_viewrange += 1
 
         neighbourhood: list[list[MapTile]] = self.map.get_submap(x=x, y=y, radius=current_viewrange)
@@ -175,7 +175,7 @@ class Animal:
         return Directions(np.random.choice(a=np.array([0, 1, 2, 3, 4]), size=1, p=directions_weights))
 
     def check_if_energy_over_max(self):
-        return self.config.max_energy_check_mult * self.energy > int(self.genome.max_animal_energy)
+        return self.energy > self.config.max_energy_check_mult * int(self.genome.max_animal_energy)
 
     def get_position(self):
         return self.x, self.y

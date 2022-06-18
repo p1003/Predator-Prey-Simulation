@@ -170,7 +170,7 @@ class Map:
                         i = 0
                         for a in self.tiles[x][y].animals:
                             if a.id in eaters_ids:
-                                a.energy += supply
+                                a.energy = min(a.energy + supply, a.genome.max_animal_energy)
                                 i += 1
                             if i >= current_plant_supply:
                                 break
@@ -180,7 +180,7 @@ class Map:
                         supply = general_supply + current_plant_supply % len(eaters_ids)
                         for a in self.tiles[x][y].animals:
                             if a.species == Species.PREY:
-                                a.energy += supply
+                                a.energy = min(a.energy + supply, a.genome.max_animal_energy)
                                 supply = general_supply
 
                     self.tiles[x][y].plant_supply = 0.0
